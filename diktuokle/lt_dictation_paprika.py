@@ -142,7 +142,11 @@ def skaityk_nustatymus():
     nust = dict(NUSTATYMAI_PAGAL_NUTYLEJIMA)
     try:
         import json
-        with open(NUSTATYMU_FAILAS, encoding="utf-8") as f:
+        # utf-8-sig, ne utf-8 (2026-09-11): PowerShell 5.1 `Set-Content -Encoding
+        # UTF8` prideda BOM, Notepad irgi moka - o json.load su utf-8 ant BOM luzta
+        # ir programa TYLIAI griebia numatytuosius (viena kalba, zurnalas isjungtas).
+        # -sig BOM praryja, jei yra, ir nieko nekeicia, jei nera.
+        with open(NUSTATYMU_FAILAS, encoding="utf-8-sig") as f:
             issaugoti = json.load(f)
         if isinstance(issaugoti, dict):
             # Tik zinomi raktai - kad senas ar svetimas failas neistemptu siuksliu.
@@ -153,7 +157,7 @@ def skaityk_nustatymus():
     # Ka tik diegta? Kalbos is instaliatoriaus LAIMI pries senas, kiti laukai ne.
     try:
         import json
-        with open(DIEGIMO_KALBU_FAILAS, encoding="utf-8") as f:
+        with open(DIEGIMO_KALBU_FAILAS, encoding="utf-8-sig") as f:
             d = json.load(f)
         if isinstance(d, dict) and isinstance(d.get("kalbos"), list) and d["kalbos"]:
             nust["kalbos"] = d["kalbos"]

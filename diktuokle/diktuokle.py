@@ -22,6 +22,22 @@ PyQt6 taisykles paimtos is `\\NAS-Rtrob\OKF_Zinios\OKF_PyQt6_GUI`:
 import ctypes
 import os
 import sys
+
+# ⚠️ PIRMAS DALYKAS, pries bet koki kita importa (2026-09-11, Roberto "nuo nulio"
+# testas): PyInstaller su console=False palieka sys.stdout ir sys.stderr = None.
+# Bet kuri biblioteka, kuri ka nors spausdina - tqdm parsisiuntimo juostai,
+# warnings, print() gilumoje - gauna "AttributeError: 'NoneType' object has no
+# attribute 'write'" ir NUVERCIA ta, kas ja kviete. Taip tyliai luzo Paprikos ir
+# skyrybos parsisiuntimas (huggingface_hub -> tqdm), o cuda.py (urllib, be tqdm)
+# ir faster-whisper (tqdm issijungia pats) veike - todel gedimas ir nesimate.
+# Patvirtinta Python'e: sys.stderr=None -> ta pati klaida; su devnull - OK.
+if sys.stdout is None:
+    sys.stdout = open(os.devnull, "w", encoding="utf-8")
+if sys.stderr is None:
+    sys.stderr = open(os.devnull, "w", encoding="utf-8")
+# Ir tqdm juostu is viso nereikia - busena rodoma lange.
+os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
+
 import threading
 import time
 import urllib.parse
