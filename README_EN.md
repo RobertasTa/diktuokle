@@ -26,6 +26,8 @@ We assembled a dictation tool around it: the window, the keys, number handling, 
 
 **[Diktuokle-0.1-setup.exe](https://github.com/RobertasTa/diktuokle/releases/latest)** — about 180 MB. Installs per user, no admin rights. The installer speaks English, Lithuanian and Russian.
 
+⚠️ **Windows will show a blue "Windows protected your PC" screen.** Not a virus, not a bug — the program has no paid code-signing certificate, so SmartScreen does not know the publisher. Click **"More info" → "Run anyway"**. To check you have the file we published, its sha256 is shown on the Release page next to the file and in the `.sha256` file. We are pursuing free signing for open-source projects; until then, this screen stays.
+
 ## First run — what to expect
 
 The installer contains no models: they are large and only needed for the languages you picked, so **on first run the program asks whether to download them**:
