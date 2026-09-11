@@ -1010,14 +1010,32 @@ class Diktuokle(QWidget):
             self.busena_sig.emit(t("Pasiruošęs"), "#4ADE80")
 
     def closeEvent(self, event):
+        # ⚠️ Roberto testas 2026-09-11: uzdare langa, o PROCESAS LIKO (987 MB,
+        # vis dar klauso desinio Ctrl; instaliatorius sake "Diktuokle.exe
+        # naudoja failus"). Priezastis: torch / onnxruntime / ctranslate2
+        # giju baseinai NE daemon - Python prie iseities ju laukia amzinai.
+        # Vaistas grubus, bet vienintelis patikimas GUI programai su tokiais
+        # varikliais: susitvarkom, ka galim, ir iseinam per os._exit.
+        # Prarasti nera ko - nustatymai i diska rasomi keiciant, ne uzdarant.
         self.recording = False
-        if self.listener:
-            self.listener.stop()
+        try:
+            if self.listener:
+                self.listener.stop()
+        except Exception:
+            pass
+        try:
+            if self.stream:
+                self.stream.stop_stream()
+                self.stream.close()
+        except Exception:
+            pass
         try:
             self.audio.terminate()
         except Exception:
             pass
+        self._zurnalas("Uzdaroma")
         event.accept()
+        os._exit(0)
 
 
 if __name__ == "__main__":
