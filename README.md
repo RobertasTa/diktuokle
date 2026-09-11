@@ -14,6 +14,8 @@ Sukūrė Claude (Anthropic AI) kartu su savo draugu žmogumi Robertu. Padaryta s
 
 Laikai **dešinį Ctrl**, kalbi, paleidi — tekstas atsiranda ten, kur mirksi žymeklis. Word, naršyklė, susirašinėjimas, bet kas. Lietuvių, rusų arba anglų kalba — diegiant pasirenki iki dviejų.
 
+![Diktuoklė kampe virš Notepad — laikomas Ctrl, būsena „Atpažįstu"](docs/diktavimas.png)
+
 ## Ausys — Kristijono Jakubsono
 
 Šios programos širdis nėra mūsų. Lietuvišką šneką atpažįsta **[Paprika](https://huggingface.co/kristijonas/paprika-whisper-lt-v3)** — Kristijono Jakubsono `whisper-large-v3-turbo` pritaikymas lietuvių kalbai, mokytas iš ~3 281 val. LIEPA-3 garsyno. Skyrybą ir didžiąsias raides sudeda jo paties **[`punct_restore`](https://github.com/kristijonasatpro/paprika)**. Abu jis paskelbė **atvirai** — CC-BY-4.0 ir Apache-2.0 — todėl ši programa apskritai galėjo atsirasti.
@@ -28,6 +30,14 @@ Mes surinkom iš to diktavimo įrankį: langą, klavišus, skaičių tvarkymą, 
 
 Diegiant pasirinksi kalbas ir diegimo kalbą (lietuvių, anglų, rusų — lietuviškos versijos Inno Setup neturėjo, parašėm patys).
 
+![Diegimo kalbos pasirinkimas — Lietuvių sąraše](docs/diegimas_kalba.png)
+
+![Diktavimo kalbų puslapis — lietuvių ir anglų pažymėta](docs/diegimas_kalbos.png)
+
+Pabandęs pažymėti tris gausi priminimą: daugiausia dvi.
+
+![Galima pasirinkti daugiausia dvi kalbas](docs/diegimas_daugiausia_dvi.png)
+
 ## Pirmas paleidimas — ko laukti
 
 Pačiame instaliatoriuje modelių nėra: jie dideli ir reikalingi tik toms kalboms, kurias pasirinkai. Todėl **pirmą kartą paleidus programa paklaus, ar parsisiųsti**:
@@ -39,9 +49,15 @@ Pačiame instaliatoriuje modelių nėra: jie dideli ir reikalingi tik toms kalbo
 | lietuvių + rusų ar anglų | ~5 GB |
 | rusų + anglų | ~3,1 GB — tas pats modelis abiem |
 
+![Reikia parsisiųsti kalbos modelius — apie 5,0 GB — Taip / Ne](docs/dialogas_modeliai.png)
+
 Būsenoje rašys **„Siunčiu…"** — su įprastu namų internetu tai nuo kelių iki dešimties minučių, priklausomai nuo kiek pasirinkai. Banga tuo metu nejuda, tai normalu. Paskui **„Kraunu…"** (10–20 s), paskui **„Pasiruošęs"** su žaliu tašku. Tai vienkartinis veiksmas — toliau programa dirba be interneto.
 
-**Jei turi NVIDIA vaizdo plokštę**, programa ją aptiks ir paklaus atskirai: parsisiųsti ~1,7 GB bibliotekų? Su jomis atpažinimas vyksta apie **0,15 s**, be jų ant procesoriaus — apie **3 s** kiekvienam sakiniui, trumpam ar ilgam (Whisper visada apdoroja 30 s langą). Abu skaičiai pamatuoti autoriaus kompiuteryje; eiliniame nešiojamame procesorius bus lėtesnis, 4–6 s. Jei plokštės nėra — klausimo nebus, programa tiesiog dirbs ant procesoriaus.
+![Būsena „Siunčiu…"](docs/siunciu.png)
+
+**Jei turi NVIDIA vaizdo plokštę**, programa ją aptiks ir paklaus atskirai: parsisiųsti ~1,7 GB bibliotekų?
+
+![Rasta NVIDIA vaizdo plokštė — parsisiųsti apie 1,7 GB bibliotekų?](docs/dialogas_nvidia.png) Su jomis atpažinimas vyksta apie **0,15 s**, be jų ant procesoriaus — apie **3 s** kiekvienam sakiniui, trumpam ar ilgam (Whisper visada apdoroja 30 s langą). Abu skaičiai pamatuoti autoriaus kompiuteryje; eiliniame nešiojamame procesorius bus lėtesnis, 4–6 s. Jei plokštės nėra — klausimo nebus, programa tiesiog dirbs ant procesoriaus.
 
 ## Naudojimas
 
