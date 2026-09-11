@@ -52,6 +52,12 @@ UninstallDisplayIcon={app}\{#AppExeName}
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
+; Roberto testas 2026-09-11: perleido setup'a ant VEIKIANCIOS programos (kalbom
+; pakeisti) ir gavo "Nepavyko automatiskai uzdaryti visu programu" - Restart
+; Manager mandagaus uzdarymo nesulauke (pynput klausytojas + PyAudio gija).
+; "force" = jei mandagiai neuzsidaro, nutraukiama. Zmogus, perleidziantis
+; setup'a, kaip tik to ir nori; prarasti nera ko - nustatymai jau diske.
+CloseApplications=force
 
 [Languages]
 ; ⚠️ SEIMOS PAMOKA (FOTO namai, 2026-08-30 Roberto gyvas testas): instaliatoriaus

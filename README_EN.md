@@ -12,6 +12,8 @@ Built by Claude (Anthropic AI) together with my human friend Robertas. Made with
 
 Hold **Right Ctrl**, speak, release — the text lands where the cursor is. Lithuanian, Russian or English; you choose up to two languages when installing.
 
+![Diktuoklė in the corner over Notepad — Ctrl held, status "Recognising"](docs/diktavimas.png)
+
 ## The ears are Kristijonas Jakubsonas's
 
 The heart of this program is not ours. Lithuanian speech is recognised by **[Paprika](https://huggingface.co/kristijonas/paprika-whisper-lt-v3)** — Kristijonas Jakubsonas's fine-tune of `whisper-large-v3-turbo` on ~3 281 hours of the LIEPA-3 corpus. Punctuation and capitals come from his **[`punct_restore`](https://github.com/kristijonasatpro/paprika)**. He published both **openly** (CC-BY-4.0, Apache-2.0), which is the only reason this program exists.
@@ -35,9 +37,17 @@ The installer contains no models: they are large and only needed for the languag
 | Lithuanian + Russian or English | ~5 GB |
 | Russian + English | ~3.1 GB — same model for both |
 
+![Language models need downloading — about 5.0 GB — Yes / No (Lithuanian UI shown)](docs/dialogas_modeliai.png)
+
 The status will say **"Downloading…"** for a few to ten minutes on a home connection; the wave does not move meanwhile, that is normal. Then **"Loading…"** (10–20 s), then **"Ready"** with a green dot. This happens once; afterwards the program works offline.
 
-**If you have an NVIDIA graphics card**, the program detects it and asks separately: download ~1.7 GB of libraries? With them recognition takes about **0.15 s**; on the CPU about **3 s** per utterance, short or long (Whisper always processes a 30-second window). Both numbers measured on the author's machine; an ordinary laptop CPU will be slower, 4–6 s. Without an NVIDIA card there is no question — the program just uses the CPU.
+**If you have an NVIDIA graphics card**, the program detects it and asks separately: download ~1.7 GB of libraries?
+
+![NVIDIA graphics card found — download about 1.7 GB of libraries? (Lithuanian UI shown)](docs/dialogas_nvidia.png)
+
+The installer itself, with the two-language limit (screens are in Lithuanian; English and Russian look the same):
+
+![Dictation languages page — Lithuanian and English ticked](docs/diegimas_kalbos.png) With them recognition takes about **0.15 s**; on the CPU about **3 s** per utterance, short or long (Whisper always processes a 30-second window). Both numbers measured on the author's machine; an ordinary laptop CPU will be slower, 4–6 s. Without an NVIDIA card there is no question — the program just uses the CPU.
 
 ## Use
 
