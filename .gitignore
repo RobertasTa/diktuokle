@@ -15,3 +15,6 @@ diktuokle/modeliai/
 *.log
 Diktuokle_data/
 Diktuokle_portable.txt
+
+# Roberto skrinu zaliava - README ima tik atrinktus is docs/
+zzs*/
