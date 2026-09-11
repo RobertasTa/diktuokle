@@ -17,6 +17,11 @@ Kas is kur (patikrinta per HF API 2026-09-11):
 """
 import os
 
+# Langineje programoje sys.stderr gali buti None - tqdm juosta tada nuvercia
+# snapshot_download (2026-09-11). diktuokle.py stderr uzkamso pirmas; sis
+# kintamasis - antra apsauga, jei moduli kas nors panaudotu atskirai.
+os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
+
 PAPRIKA_REPO = "RobertasTa/paprika-whisper-lt-v3-ct2-int8"
 LARGE_REPO = "Systran/faster-whisper-large-v3"
 SKYRYBOS_REPO = "1-800-BAD-CODE/xlm-roberta_punctuation_fullstop_truecase"
