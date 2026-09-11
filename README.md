@@ -97,7 +97,7 @@ Galima sakyti ir ženklus: *taškas, kablelis, brūkšnys, pliusas, lygu, procen
 
 Nustatymai įsimenami. Apačioje meniu visada parašyta, kas klauso: *Ausys: Paprika — Kristijonas Jakubsonas* arba, jei Paprika neįdiegta, *bendrasis modelis*.
 
-![Dantračio meniu: Skyryba ir didžiosios, Visada viršuje, du žurnalo jungikliai, „Žurnalas nerašomas", „Ausys: Paprika — Kristijonas Jakubsonas"](docs/dantratis.png)
+![Dantračio meniu: Skyryba ir didžiosios, Visada viršuje, du žurnalo jungikliai (čia pirmasis įjungtas, todėl matosi eilutė „Žurnalas: diktuokle.log…"), „Garsas ir tekstas lieka šiame kompiuteryje", „Ausys: Paprika — Kristijonas Jakubsonas"](docs/dantratis.png)
 
 Klaustukas — instrukcija pačioje programoje, „Apie" ir kelias pas asistentą:
 
