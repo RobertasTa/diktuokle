@@ -1,0 +1,24 @@
+# Diktuokle - tikslios versijos is aplinkos, kurioje viskas patikrinta 2026-09-11.
+# Paleisti is saltiniu:  python diktuokle/diktuokle.py
+# Surinkti .exe:         python -m PyInstaller Diktuokle.spec --noconfirm
+
+faster-whisper==1.2.1
+ctranslate2==4.7.1
+PyQt6==6.11.0
+punctuators==0.0.7        # tempia torch (~0,5 GB) modelio krovimo metu - neisvengiama
+onnxruntime==1.24.4
+torch==2.14.0
+sentencepiece==0.2.2
+omegaconf==2.3.1
+numpy==2.4.4
+huggingface_hub           # ateina su faster-whisper; naudojam parsisiuntimui
+PyAudio==0.2.14
+pynput==1.8.1
+pyperclip==1.11.0
+
+# Tik surinkimui i .exe:
+pyinstaller==6.22.2
+
+# CUDA bibliotekos (nvidia-cublas-cu12 12.9.2.10, nvidia-cudnn-cu12 9.20.0.48)
+# cia SAMONINGAI NEISVARDYTOS: programa jas parsisiuncia pati, tik radusi NVIDIA
+# ir tik zmogui sutikus (diktuokle/cuda.py). Be plokstes ju nereikia.

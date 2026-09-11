@@ -1,0 +1,17 @@
+# PyInstaller ir Inno Setup rezultatai - 830 MB + 182 MB, keliauja i Release, ne i git
+dist/
+build/
+
+# Python
+__pycache__/
+*.pyc
+
+# Modeliai ir CUDA - niekada git'e (gigabaitai; programa parsisiuncia pati)
+diktuokle/modeliai/
+*.onnx
+*.bin
+
+# Vietiniai
+*.log
+Diktuokle_data/
+Diktuokle_portable.txt
