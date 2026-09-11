@@ -169,6 +169,8 @@ the user where they are if they want the disk space back.
 
 | What the user sees | Cause | Fix |
 |---|---|---|
+| Blue "Windows protected your PC" when starting the installer | unsigned executable — SmartScreen does not know the publisher | "More info" → "Run anyway"; the sha256 on the Release page lets them verify the file. Not malware; say so plainly |
+| Closed the window but a reinstall says Diktuokle.exe is running (builds before 2026-09-11 14:31) | non-daemon torch/onnxruntime threads kept the process alive after the window closed | update to the current 0.1 asset; meanwhile end it in Task Manager |
 | Text appears only after a long wait (≈ 3 s) | CPU path; normal | GPU offer on next start if NVIDIA present; otherwise it is the cost |
 | "Ilgai galvoja" then **nothing** appears, every time | (older builds) CUDA loaded but `cublas64_12.dll` missing — inference failed | update to ≥ 0.1 with the startup probe; or gear → diagnostic log and read it |
 | Only one language button although two were expected | that is what was ticked at install | reinstall and tick both; max two |
