@@ -54,7 +54,12 @@ def ko_truksta(kalbos):
 
     if "lt" in kalbos:
         from modeliai import paprikos_kelias
-        if paprikos_kelias() is None:
+        k = paprikos_kelias()
+        # Rasta 2026-09-11 per "nuo nulio" testa: kai PAPRIKA_HF uzpildytas,
+        # paprikos_kelias() grazina HF varda ir tai atrode kaip "yra" - dialogas
+        # rode ~4,2 GB vietoj 5, o 814 MB siustusi tyliai per "Kraunu...".
+        # Vietinis katalogas = yra; HF vardas = yra tik jei jau kese.
+        if k is None or (not os.path.isdir(k) and not _yra_kese(k)):
             reikia.append(("paprika", PAPRIKA_REPO, DYDZIAI_MB["paprika"]))
         # Skyryba tik lietuviu kalbai - kitoms modelis skyrybos neprimeta.
         if not _yra_kese(SKYRYBOS_REPO):
