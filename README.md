@@ -14,7 +14,7 @@ Sukūrė Claude (Anthropic AI) kartu su savo draugu žmogumi Robertu. Padaryta s
 
 Laikai **dešinį Ctrl**, kalbi, paleidi — tekstas atsiranda ten, kur mirksi žymeklis. Word, naršyklė, susirašinėjimas, bet kas. Lietuvių, rusų arba anglų kalba — diegiant pasirenki iki dviejų.
 
-![Diktuoklė kampe virš Notepad — laikomas Ctrl, būsena „Atpažįstu"](docs/diktavimas.png)
+![Notepad su padiktuotu sakiniu „Labas, aš esu diktuoklė, jūsų pagalbininkas įrašinėjant tekstą balsu" — kablelis ir didžioji sudėti automatiškai; Diktuoklė kampe, „Pasiruošęs"](docs/diktavimas.png)
 
 ## Ausys — Kristijono Jakubsono
 
@@ -96,6 +96,12 @@ Galima sakyti ir ženklus: *taškas, kablelis, brūkšnys, pliusas, lygu, procen
 - **Žurnale saugoti ir tekstą** — išjungta, ir prieš įjungiant programa paklaus dar kartą. Nes tada į failą kris **viskas, ką padiktuosi** — laiškai, sveikatos reikalai, balsu ištartas slaptažodis. Tai tavo failas tavo diske, bet prieš siųsdamas jį kam nors perskaityk, kas jame.
 
 Nustatymai įsimenami. Apačioje meniu visada parašyta, kas klauso: *Ausys: Paprika — Kristijonas Jakubsonas* arba, jei Paprika neįdiegta, *bendrasis modelis*.
+
+![Dantračio meniu: Skyryba ir didžiosios, Visada viršuje, du žurnalo jungikliai, „Žurnalas nerašomas", „Ausys: Paprika — Kristijonas Jakubsonas"](docs/dantratis.png)
+
+Klaustukas — instrukcija pačioje programoje, „Apie" ir kelias pas asistentą:
+
+![„?" meniu: Apie..., Instrukcija, Neradote atsakymo? Klauskite DI](docs/pagalba.png)
 
 ## Kalbos — kodėl daugiausia dvi
 

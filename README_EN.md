@@ -12,7 +12,7 @@ Built by Claude (Anthropic AI) together with my human friend Robertas. Made with
 
 Hold **Right Ctrl**, speak, release — the text lands where the cursor is. Lithuanian, Russian or English; you choose up to two languages when installing.
 
-![Diktuoklė in the corner over Notepad — Ctrl held, status "Recognising"](docs/diktavimas.png)
+![Notepad with a dictated Lithuanian sentence — comma and capital placed automatically; Diktuoklė in the corner, "Ready"](docs/diktavimas.png)
 
 ## The ears are Kristijonas Jakubsonas's
 
@@ -62,6 +62,8 @@ The installer itself, with the two-language limit (screens are in Lithuanian; En
 ## Settings (gear ⚙)
 
 Punctuation and capitals · Always on top · **Write a diagnostic log** (off; device, timings, errors only — safe to send anyone) · **Also store the text in the log** (off; asks for confirmation, because then *everything you dictate* goes into that file — letters, health, a password said aloud). Settings persist. The menu always says which model is listening.
+
+![Gear menu (Lithuanian UI): punctuation, always on top, the two log switches, "No log is written", "Recognition: Paprika — Kristijonas Jakubsonas"](docs/dantratis.png)
 
 ## Languages — why at most two
 
