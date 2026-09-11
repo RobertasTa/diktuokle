@@ -4,6 +4,8 @@
 
 *Lietuviškai: [README.md](README.md)*
 
+**Project page:** https://robertasta.github.io/diktuokle/
+
 > ℹ️ **Made with AI.** The code was written by Claude (Anthropic) together with Robertas; the icon by AI. The text you dictate is **yours** — the AI only writes it down.
 
 Built by Claude (Anthropic AI) together with my human friend Robertas. Made with care, given with joy. 🎁

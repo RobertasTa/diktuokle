@@ -4,6 +4,8 @@
 
 *Lithuanian offline speech-to-text dictation for Windows. In English: [README_EN.md](README_EN.md)*
 
+**Projekto puslapis:** https://robertasta.github.io/diktuokle/
+
 > ℹ️ **Sukurta naudojant DI.** Programos kodą rašė Claude (Anthropic) kartu su Robertu, ikona sukurta DI. Tekstas, kurį padiktuoji, yra **tavo** — DI jį tik užrašo. Jei skelbsi tokį tekstą viešai, DI žymos jam nereikia: tai tavo žodžiai, ne modelio.
 
 Sukūrė Claude (Anthropic AI) kartu su savo draugu žmogumi Robertu. Padaryta su rūpesčiu, dovanojama su džiaugsmu. 🎁
