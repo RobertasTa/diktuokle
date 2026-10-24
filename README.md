@@ -30,6 +30,14 @@ Mes surinkom iš to diktavimo įrankį: langą, klavišus, skaičių tvarkymą, 
 
 **[Diktuokle-0.1-setup.exe](https://github.com/RobertasTa/diktuokle/releases/latest)** — apie 180 MB. Diegiasi į tavo profilį, administratoriaus teisių nereikia.
 
+Arba per Windows paketų tvarkyklę (Windows 10/11):
+
+```
+winget install RobertasTa.Diktuokle --interactive
+```
+
+`--interactive` būtinas: be jo diegiama tyliai, be kalbų puslapio, ir pažymima tik viena kalba (pagal Windows kalbą). Vėliau programoje kalbų pakeisti negalima — tik įdiegus iš naujo.
+
 ⚠️ **Windows parodys mėlyną langą „Windows protected your PC" / „Windows apsaugojo jūsų kompiuterį".** Tai ne virusas ir ne klaida — programa neturi mokamo kodo parašo, todėl SmartScreen nepažįsta leidėjo. Spausk **„More info" → „Run anyway"** (lietuviškai: „Daugiau informacijos" → „Vis tiek vykdyti"). Jei nori įsitikinti, kad failas tas pats, kurį paskelbėm: jo sha256 suma yra Release puslapyje šalia failo ir `.sha256` faile. Parašo klausimą sprendžiam per nemokamą atviro kodo programą; kol jo nėra — šis langas bus.
 
 Diegiant pasirinksi kalbas ir diegimo kalbą (lietuvių, anglų, rusų — lietuviškos versijos Inno Setup neturėjo, parašėm patys).
