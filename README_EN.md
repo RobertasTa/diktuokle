@@ -75,7 +75,7 @@ The installer contains no models: they are large and only needed for the languag
 | Lithuanian + English | ~4.1 GB |
 | Russian + English | ~3.3 GB |
 
-![Language models need downloading — Yes / No (Lithuanian UI, picture from 0.1 when Lithuanian + English was still 5.0 GB)](docs/dialogas_modeliai.png)
+![Language models need downloading — Lithuanian + Russian: about 1.2 GB — Yes / No (Lithuanian UI shown)](docs/dialogas_modeliai.png)
 
 The status will say **"Downloading…"** for one to ten minutes on a home connection, depending on what you picked; the wave does not move meanwhile, that is normal. Then **"Loading…"** (Lithuanian and Russian: a few seconds; with English: 10–20 s), then **"Ready"** with a green dot. This happens once; afterwards the program works offline.
 
@@ -101,7 +101,7 @@ The installer itself, with the two-language limit (screens are in Lithuanian; En
 
 Punctuation and capitals · Always on top · **Microphone** (which one to listen to; default is the Windows default — if Windows switches it when you plug in a USB speaker or headset, pick yours here and the program sticks to it, remembered by name) · **Write a diagnostic log** (off; device, timings, errors only — safe to send anyone) · **Also store the text in the log** (off; asks for confirmation, because then *everything you dictate* goes into that file — letters, health, a password said aloud). Settings persist. The menu always says which model is listening, for each installed language — e.g. *Recognition: LT_ausys — Kristijonas Jakubsonas*, or *no model* if it was not downloaded.
 
-![Gear menu (Lithuanian UI): punctuation, always on top, the two log switches, "Audio and text stay on this computer" (picture from 0.1 — the bottom line then still said "Paprika")](docs/dantratis.png)
+![Gear menu (Lithuanian UI): punctuation, always on top, microphone, the two log switches, "Audio and text stay on this computer", "Recognition: LT_ausys — Kristijonas Jakubsonas", "GigaAM v3 — SberDevices" (a phone photo — Print Screen closes the menu)](docs/dantratis.png)
 
 ## Languages — why at most two
 

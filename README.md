@@ -87,7 +87,7 @@ Pačiame instaliatoriuje modelių nėra: jie dideli ir reikalingi tik toms kalbo
 | lietuvių + anglų | ~4,1 GB |
 | rusų + anglų | ~3,3 GB |
 
-![Reikia parsisiųsti kalbos modelius — Taip / Ne (paveikslėlis iš 0.1, kai lietuvių + anglų dar buvo 5,0 GB)](docs/dialogas_modeliai.png)
+![Reikia parsisiųsti kalbos modelius — lietuvių + rusų: apie 1,2 GB — Taip / Ne](docs/dialogas_modeliai.png)
 
 Būsenoje rašys **„Siunčiu…"** — su įprastu namų internetu tai nuo minutės iki dešimties, priklausomai nuo kiek pasirinkai. Banga tuo metu nejuda, tai normalu. Paskui **„Kraunu…"** (lietuvių ir rusų — kelios sekundės, su anglų — 10–20 s), paskui **„Pasiruošęs"** su žaliu tašku. Tai vienkartinis veiksmas — toliau programa dirba be interneto.
 
@@ -135,7 +135,7 @@ Galima sakyti ir ženklus: *taškas, kablelis, brūkšnys, pliusas, lygu, procen
 
 Nustatymai įsimenami. Apačioje meniu visada parašyta, kas klauso — kiekvienai įdiegtai kalbai: *Ausys: LT_ausys — Kristijonas Jakubsonas*, *Ausys: GigaAM v3 — SberDevices* arba, jei modelis neparsisiųstas, *modelio nėra*.
 
-![Dantračio meniu: Skyryba ir didžiosios, Visada viršuje, du žurnalo jungikliai, „Garsas ir tekstas lieka šiame kompiuteryje" (paveikslėlis iš 0.1 — tada apačioje dar buvo „Ausys: Paprika")](docs/dantratis.png)
+![Dantračio meniu: Skyryba ir didžiosios, Visada viršuje, Mikrofonas, du žurnalo jungikliai, „Garsas ir tekstas lieka šiame kompiuteryje", „Ausys: LT_ausys — Kristijonas Jakubsonas", „Ausys: GigaAM v3 — SberDevices" (Roberto nuotrauka telefonu — Print Screen meniu uždaro)](docs/dantratis.png)
 
 Klaustukas — instrukcija pačioje programoje, „Apie" ir kelias pas asistentą:
 
