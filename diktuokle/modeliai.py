@@ -86,3 +86,44 @@ def kur_ieskota():
             os.path.join(_duomenu_katalogas(), "modeliai", "paprika-ct2-int8"),
             PAPRIKA_HF or "(HF vardas neįrašytas)",
             PAPRIKA_ROBERTO]
+
+
+# --- Naujos ausys (0.2, 2026-10-25): onnx-asr modeliai -------------------------
+# Lietuviu - LT_ausys (Kristijono kmynas v4, musu ONNX int8), rusu - GigaAM v3
+# e2e (SberDevices, MIT). Abu ONNX formatu, abu sukasi procesoriuje. Paprikos
+# kelias auksciau paliktas senajai tkinter versijai (lt_dictation_paprika.py).
+#
+# Is HF imam TIK int8 failus: lt-ausys repo turi ir fp32 (2,5 GB), gigaam -
+# dar penkis variantus. Failu sarasas = tai, ko onnx-asr 0.12.0 iesko
+# (`_get_model_files`), patikrinta 2026-10-25 kraunant is katalogo be tinklo.
+ONNX_MODELIAI = {
+    "lt_ausys": {
+        "repo": "RobertasTa/lt-ausys",
+        "tipas": "nemo-conformer-tdt",
+        "failai": ["config.json", "vocab.txt", "encoder-model.int8.onnx",
+                   "decoder_joint-model.int8.onnx"],
+    },
+    "gigaam": {
+        "repo": "istupakov/gigaam-v3-onnx",
+        "tipas": "gigaam-v3-e2e-rnnt",
+        "failai": ["config.json", "v3_e2e_rnnt_vocab.txt", "v3_e2e_rnnt_encoder.int8.onnx",
+                   "v3_e2e_rnnt_decoder.int8.onnx", "v3_e2e_rnnt_joint.int8.onnx"],
+    },
+}
+
+
+def onnx_vietos(raktas):
+    """Kur ieskom (pirmas rastas laimi): salia programos (flesiukas, ranka
+    padeti failai), tada duomenu kataloge - ten deda `parsisiuntimas.py`."""
+    return [os.path.join(CIA, "modeliai", raktas),
+            os.path.join(_duomenu_katalogas(), "modeliai", raktas)]
+
+
+def onnx_kelias(raktas):
+    """Katalogas, kuriame guli VISI modelio failai, arba None. Tikrinam
+    kiekviena faila: nutrukes parsisiuntimas palieka puse katalogo."""
+    failai = ONNX_MODELIAI[raktas]["failai"]
+    for k in onnx_vietos(raktas):
+        if all(os.path.isfile(os.path.join(k, f)) for f in failai):
+            return k
+    return None

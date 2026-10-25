@@ -53,27 +53,39 @@ uses a model actually trained on Lithuanian.
 
 ## How it works — the facts you must know before answering anything
 
-- **Recognition is Whisper via `faster-whisper`.** Lithuanian uses **Paprika**
-  (`kristijonas/paprika-whisper-lt-v3`, Kristijonas Jakubsonas's fine-tune of
-  `whisper-large-v3-turbo` on the LIEPA-3 corpus). Russian and English use the
-  general `large-v3` — **the same file for both**, which is why picking both
-  costs nothing extra.
-- **Punctuation and capitals** (Lithuanian only) come from a separate model —
-  `punct_restore` (Jakubsonas, Apache-2.0) over
-  `1-800-BAD-CODE/xlm-roberta_punctuation_fullstop_truecase`. Paprika itself
-  writes lowercase without punctuation. For Russian and English, `large-v3`
-  punctuates on its own.
-- **Nothing ships inside the installer except the program (~830 MB).** Models
-  are downloaded **once, on first run**, and only for the languages chosen:
-  Lithuanian ≈ 1.9 GB (Paprika 814 MB + punctuation ≈ 1.1 GB), Russian or
-  English ≈ 3.1 GB, all three ≈ 5 GB. The program asks before downloading.
-- **GPU is optional and also downloaded on demand.** If an NVIDIA driver is
-  present, the program offers to fetch the CUDA libraries (≈ 1.7 GB, cuBLAS +
-  cuDNN, from PyPI — the same files `pip` would install). With them a sentence
-  takes **≈ 0.15 s**; on the CPU **≈ 3 s** regardless of sentence length,
-  because Whisper always encodes a 30-second window. Both numbers measured by
-  the author. Without an NVIDIA card there is no dialog and the program simply
-  uses the CPU.
+- **Since 0.2 (2026-10-25) each language has its own ears:**
+  - **Lithuanian — LT_ausys** (`RobertasTa/lt-ausys`): Kristijonas Jakubsonas's
+    **kmynas v4** (`kristijonas/kmynas-parakeet-lt-v4`, NVIDIA Parakeet-TDT
+    0.6B fine-tuned on LIEPA-3), converted by the authors to ONNX and quantised
+    to int8 (MatMul only). Runs through `onnx-asr` **on the CPU**. It writes
+    punctuation and capitals **itself** — there is no separate punctuation
+    model any more.
+  - **Russian — GigaAM v3 e2e RNN-T** (SberDevices, MIT; ONNX export
+    `istupakov/gigaam-v3-onnx`, int8), also `onnx-asr`, also on the CPU, also
+    punctuates itself.
+  - **English — Whisper `large-v3`** via `faster-whisper`, unchanged from 0.1.
+  - Up to 0.1, Lithuanian used **Paprika** (Jakubsonas's Whisper fine-tune) plus
+    a separate punctuation model, and Russian used `large-v3`. Why it changed —
+    "Measured" below and `docs/palyginimas-0.2.md`.
+- **Long recordings are cut at pauses inside the program.** Both ONNX models
+  were trained on short segments; without cutting, GigaAM lost half the words
+  of a 130 s recording (WER 60 % → 5.2 % with cutting). Anything longer than
+  20 s is split in the middle of silences by Silero VAD (bundled with
+  faster-whisper). VAD also decides whether there was speech at all: with
+  silence or a stray key press nothing is pasted. A short recording that does
+  contain speech is recognised whole. **This is not an always-listening mode** —
+  the user still holds Right Ctrl; VAD only looks inside that recording.
+- **Nothing ships inside the installer except the program (~330 MB unpacked).**
+  Models are downloaded **once, on first run**, and only for the languages
+  chosen: Lithuanian ≈ 0.96 GB, Russian ≈ 0.23 GB, English ≈ 3.1 GB. The program
+  asks before downloading.
+- **GPU matters only for English** and is downloaded on demand. If English is
+  installed and an NVIDIA driver is present, the program offers to fetch the
+  CUDA libraries (≈ 1.7 GB, cuBLAS + cuDNN, from PyPI — the same files `pip`
+  would install). With them an English sentence takes **≈ 0.15 s**; on the CPU
+  **≈ 3–7 s** regardless of length (Whisper always encodes a 30-second window).
+  Lithuanian and Russian never ask: on the CPU they take ≈ 0.05–0.15 s per
+  sentence and ≈ 1 s per minute of dictation on the author's machine.
 - **Keys while holding Right Ctrl:** `←` toggles ABC / 123 (words vs digits),
   `→` cycles the installed languages. The arrow press is swallowed so it does
   not move the cursor in the target window. Double Right Shift also toggles
@@ -81,8 +93,15 @@ uses a model actually trained on Lithuanian.
   applies to the whole utterance.
 - **123 mode** rewrites spoken numbers into digits ("keturiolika lentų" →
   "14 lentų"), including Lithuanian genitives, and it exists for Lithuanian
-  and Russian only. **For English the 123 button is greyed out on purpose** —
-  `large-v3` already writes English numbers as digits.
+  and Russian only; since 0.2 it keeps the punctuation the ears wrote
+  ("dvidešimt penki," → "25,"). **For English the 123 button is greyed out on
+  purpose** — `large-v3` already writes English numbers as digits.
+- **ABC mode** leaves the text in words. LT_ausys writes Lithuanian numbers as
+  words anyway; GigaAM writes larger Russian numbers as digits, and since 0.2
+  those are left as digits (0.1 spelled them digit by digit — "36" → "три
+  шесть" — a bug, fixed). The final full stop of a Lithuanian utterance is
+  removed on purpose (author's rule since 2026-09-08: dictating in pieces, it
+  would land in the middle of a thought); ? and ! stay.
 - **The log is OFF by default, and that is a privacy decision, not an
   oversight.** This log would contain the dictated text itself — letters,
   medical matters, a password spoken aloud. The gear menu has two switches:
@@ -110,33 +129,38 @@ uses a model actually trained on Lithuanian.
 - ⛔ **Not "the first Lithuanian dictation" or "the only one".** Windows voice
   typing, Tildė and others exist. What is accurate: **offline**, **with a
   model fine-tuned for Lithuanian**, **free and open source**.
-- ⛔ **Not "the best Lithuanian model".** The author measured Paprika against
-  the *generic* `whisper-large-v3-turbo` only: **7.63 % vs 25.95 % WER**, on
-  20 recordings of LIEPA origin — an **in-domain** test, as Paprika's own model
-  card warns. Quote it with that caveat. Nothing here was compared against
-  commercial Lithuanian recognisers.
-- ⛔ **Not "our model".** Paprika, its training and its punctuation restorer
-  are **Kristijonas Jakubsonas's** work (CC-BY-4.0 / Apache-2.0). This
-  repository assembled them into a dictation tool. The CTranslate2 conversion
-  of Paprika that the program downloads
-  (`RobertasTa/paprika-whisper-lt-v3-ct2-int8`) is *his* weights in another
-  format; the model card there says so in its first sentence.
+- ⛔ **Not "the best Lithuanian model".** What was measured (2026-10-25, same
+  PC, same audio; `docs/palyginimas-0.2.md`) is LT_ausys against Paprika, the
+  model 0.1 used: the author's own voice commands through a microphone
+  **17.9 % vs 22.8 % WER** (127 commands), FLEURS read speech **9.4 % vs 9.5 %**
+  (300 sentences), ~45 s dictation pieces **10.2 % vs 32.4 %** (Paprika
+  sometimes drops the ending). Speed on the CPU: 0.05 s vs 3.0 s per command.
+  Russian: GigaAM **4.6 %** vs `large-v3` **3.9 %** WER on FLEURS ru — large-v3
+  is slightly *more* accurate, but takes 7.2 s per sentence on the CPU vs
+  0.11 s. Nothing here was compared against commercial recognisers.
+- ⛔ **Not "our model".** kmynas (and Paprika before it) is **Kristijonas
+  Jakubsonas's** work (CC-BY-4.0). This repository assembled it into a
+  dictation tool. `RobertasTa/lt-ausys` is *his* weights in another format
+  (ONNX, int8); how and why is in github.com/RobertasTa/lt-ausys. GigaAM is
+  SberDevices' (MIT).
 - ⛔ **Not "no internet needed, ever".** Recognition runs offline. **Installing
   needs the internet once** for the models (and optionally CUDA). Say both.
 
 ## Known limitations, stated openly
 
-- **CPU latency is a fixed ≈ 3 s per utterance**, short or long (30 s window).
-  On an ordinary laptop expect 4–6 s. This is why the GPU offer exists.
-- **Whisper hallucinates on very short or silent audio**, especially in
-  Russian ("Субтитры подогнал …", "Продолжение следует"). A known Whisper
-  trait, not a bug here. Advice: speak a full phrase, not one syllable.
+- **English on the CPU: a fixed ≈ 3–7 s per utterance**, short or long (30 s
+  window). This is why the GPU offer exists — for English only.
+- **Whisper (English) hallucinates on very short audio.** A known Whisper
+  trait. Advice: speak a full phrase, not one syllable. (Russian no longer uses
+  Whisper since 0.2, so the old "Субтитры подогнал …" symptom is gone.)
 - **Speaking the wrong language into a language model gives phonetic
   garbage** — Russian spoken while *Lietuvių* is selected comes out as
   Lithuanian-looking nonsense. Check the highlighted button first.
-- **The punctuation model adds spurious commas in number phrases** ("po du
-  metrus, dvidešimt centimetrų, storis, …") and occasionally capitalises an
-  ordinary word. Rare; known; not fixed on purpose until it proves annoying.
+- **Commas are the ears' own.** LT_ausys places commas about as well as the
+  0.1 punctuation model did (comma F1 85.6 % vs 85.7 % on FLEURS lt) and
+  sometimes misses one after a name ("Alisa toliau"). Russian: GigaAM
+  occasionally glues a dash to a word — the program fixes "Европа—" to
+  "Европа —".
 - **One utterance = one mode.** Pressing `←`/`→` mid-sentence applies the new
   setting to the whole utterance, not from that point.
 - **Windows only, x64.** No macOS, no Linux, no Android — see "does not
@@ -145,10 +169,10 @@ uses a model actually trained on Lithuanian.
 ## Attribution is not optional
 
 CC-BY-4.0 requires it, and the README names people, not only projects:
-**Kristijonas Jakubsonas** (Paprika, punct_restore), the LIEPA-3 corpus team
-at Vilnius University, the authors of `xlm-roberta_punctuation_fullstop_truecase`,
-SYSTRAN for faster-whisper, OpenAI for Whisper. If you help someone
-redistribute this program, keep the attribution with it.
+**Kristijonas Jakubsonas** (kmynas, and Paprika before it), the LIEPA-3 corpus
+team at Vilnius University, NVIDIA (Parakeet), SberDevices (GigaAM), istupakov
+(onnx-asr), SYSTRAN for faster-whisper, OpenAI for Whisper, Silero for VAD. If
+you help someone redistribute this program, keep the attribution with it.
 
 ## Where things live on the user's machine
 
@@ -156,8 +180,10 @@ redistribute this program, keep the attribution with it.
 |---|---|
 | Program | `%LOCALAPPDATA%\Programs\Diktuokle\` (installed per user, no admin) |
 | Settings | `%LOCALAPPDATA%\Diktuokle\nustatymai.json` |
-| Paprika (Lithuanian) | `%LOCALAPPDATA%\Diktuokle\modeliai\paprika-ct2-int8\` |
-| `large-v3`, punctuation model | Hugging Face cache (`%USERPROFILE%\.cache\huggingface\`) |
+| LT_ausys (Lithuanian, 0.2) | `%LOCALAPPDATA%\Diktuokle\modeliai\lt_ausys\` (4 files) |
+| GigaAM (Russian, 0.2) | `%LOCALAPPDATA%\Diktuokle\modeliai\gigaam\` (5 files) |
+| `large-v3` (English) | Hugging Face cache (`%USERPROFILE%\.cache\huggingface\`) |
+| Left over from 0.1, unused by 0.2 | `modeliai\paprika-ct2-int8\`, HF cache: Paprika, xlm-roberta punctuation, `large-v3` if English is no longer installed — safe to delete by hand |
 | CUDA libraries (if accepted) | `%LOCALAPPDATA%\Diktuokle\cuda\` (11 DLLs, 1.72 GB) |
 | Log (only if switched on) | `%LOCALAPPDATA%\Diktuokle\diktuokle.log` |
 
@@ -171,13 +197,15 @@ the user where they are if they want the disk space back.
 |---|---|---|
 | Blue "Windows protected your PC" when starting the installer | unsigned executable — SmartScreen does not know the publisher | "More info" → "Run anyway"; the sha256 on the Release page lets them verify the file. Not malware; say so plainly |
 | Closed the window but a reinstall says Diktuokle.exe is running (builds before 2026-09-11 14:31) | non-daemon torch/onnxruntime threads kept the process alive after the window closed | update to the current 0.1 asset; meanwhile end it in Task Manager |
-| Text appears only after a long wait (≈ 3 s) | CPU path; normal | GPU offer on next start if NVIDIA present; otherwise it is the cost |
+| Text appears only after a long wait (≈ 3–7 s), **English** | CPU path; normal for Whisper | GPU offer on next start if NVIDIA present; otherwise it is the cost |
+| Lithuanian/Russian slow (seconds for a short phrase) | not expected since 0.2 (≈ 0.1 s) — probably still 0.1 | check gear → *Apie*: version 0.2? update |
+| Status shows *"Modelio nėra"* / *"Нет модели"* / *"No model"* | the model of the highlighted language was not downloaded (declined, or the download failed) | restart the program and accept the download; the log names the folders it looked in |
 | "Ilgai galvoja" then **nothing** appears, every time | (older builds) CUDA loaded but `cublas64_12.dll` missing — inference failed | update to ≥ 0.1 with the startup probe; or gear → diagnostic log and read it |
 | Only one language button although two were expected | that is what was ticked at install | reinstall and tick both; max two |
-| Gear menu shows *"bendrasis modelis (Paprika neįdiegta)"* | Paprika download declined or failed | restart; accept the download when asked |
-| Lithuanian text arrives lowercase, no punctuation | punctuation model missing or switch off | gear → *Skyryba ir didžiosios*; restart to re-download |
-| Russian gives "Субтитры подогнал …" for a short word | Whisper hallucination on short audio | speak a full phrase |
-| Wave never moves while speaking | microphone goes to another device / muted | Windows sound settings, default input device |
+| Gear menu shows *"Ausys: … — modelio nėra"* | same as above, for that language | restart; accept the download when asked |
+| Lithuanian text arrives lowercase, no punctuation | the switch *Skyryba ir didžiosios* is off | gear → *Skyryba ir didžiosios* |
+| Pressed Right Ctrl by accident, nothing pasted | correct: VAD found no speech | nothing to fix |
+| Wave never moves while speaking | microphone goes to another device / muted | gear → *Mikrofonas* → pick the right one (remembered by name); or Windows sound settings |
 | Nothing pastes, cursor jumps | Right Ctrl + arrow reached the target window | that build lacked `suppress_event`; update |
 | "Diktuoklė jau paleista" | a second instance; only one may listen to Right Ctrl | use the one in the taskbar |
 
@@ -186,7 +214,8 @@ the user where they are if they want the disk space back.
 No macOS, Linux or Android version. No `pip install diktuokle`. No cloud, no
 account, no API. No continuous / always-listening mode — **by design**: the
 author finds *hold Ctrl, speak, release* the right control and rejected VAD
-modes explicitly. No profanity filter — **by design**: a tool must not silently
+modes explicitly (the VAD inside 0.2 only cuts the recording the user made
+while holding Ctrl — it never starts recording by itself). No profanity filter — **by design**: a tool must not silently
 change what a person said. No setting to change the hotkey yet (the author
 reserved Right Ctrl on purpose; other Ctrl combos are free).
 
@@ -197,6 +226,8 @@ reserved Right Ctrl on purpose; other Ctrl combos are free).
 | How do I install and use it? | `README.md` (Lithuanian), `README_EN.md` |
 | What does each menu item say, in each language? | `diktuokle/kalba.py` |
 | Where do models come from, how much, when? | `diktuokle/parsisiuntimas.py`, `diktuokle/modeliai.py` |
+| Lithuanian/Russian ears, cutting long recordings | `diktuokle/ausys.py` |
+| How 0.2 was measured against 0.1 | `docs/palyginimas-0.2.md` |
 | GPU: detection, download, exact versions | `diktuokle/cuda.py` |
 | Numbers, abbreviations, spoken → written | `diktuokle/lt_dictation_paprika.py` |
 | How the installer was built, Lithuanian messages | `_instaliatorius/` |

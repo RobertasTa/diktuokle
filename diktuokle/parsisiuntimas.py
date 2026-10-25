@@ -14,6 +14,15 @@ Kas is kur (patikrinta per HF API 2026-09-11):
              kalboms - tas pats failas abiem.
   skyryba  - xlm-roberta ONNX, Apache-2.0. Reikalingas TIK lietuviu kalbai:
              large-v3 rusiskai ir angliskai skyryba deda pats.
+
+NUO 0.2 (2026-10-25) - kitos ausys, zr. ausys.py:
+  lt_ausys - `RobertasTa/lt-ausys` (Kristijono kmynas v4, CC BY 4.0), tik int8.
+             Skyryba deda PATS, tad skyrybos modelio (1,1 GB) nebereikia.
+  gigaam   - `istupakov/gigaam-v3-onnx` (SberDevices GigaAM v3 e2e, MIT), tik
+             int8. Rusu kalbai nebereikia large-v3.
+  large    - liko TIK anglu kalbai.
+Paprika ir skyryba is saraso isimti: lietuviui dabar ~0,96 GB vietoj 1,9 GB,
+rusui ~0,23 GB vietoj 3,1 GB.
 """
 import os
 
@@ -27,7 +36,8 @@ LARGE_REPO = "Systran/faster-whisper-large-v3"
 SKYRYBOS_REPO = "1-800-BAD-CODE/xlm-roberta_punctuation_fullstop_truecase"
 
 # Dydziai zmogui - apvalinti i didesne puse, kad nebutu nemalonaus siurprizo.
-DYDZIAI_MB = {"paprika": 820, "large": 3100, "skyryba": 1100}
+# lt_ausys 954,3 MB, gigaam 226,6 MB - HF API 2026-10-25 (tik int8 failai).
+DYDZIAI_MB = {"lt_ausys": 960, "gigaam": 230, "large": 3100}
 
 
 def _duomenu_katalogas():
@@ -55,23 +65,15 @@ def _yra_kese(repo):
 def ko_truksta(kalbos):
     """Grazina sarasa [(raktas, repo, MB), ...] - ko reikia parsisiusti butent
     sitoms kalboms. Tuscias sarasas reiskia, kad viskas vietoje."""
+    from modeliai import ONNX_MODELIAI, onnx_kelias
     reikia = []
 
-    if "lt" in kalbos:
-        from modeliai import paprikos_kelias
-        k = paprikos_kelias()
-        # Rasta 2026-09-11 per "nuo nulio" testa: kai PAPRIKA_HF uzpildytas,
-        # paprikos_kelias() grazina HF varda ir tai atrode kaip "yra" - dialogas
-        # rode ~4,2 GB vietoj 5, o 814 MB siustusi tyliai per "Kraunu...".
-        # Vietinis katalogas = yra; HF vardas = yra tik jei jau kese.
-        if k is None or (not os.path.isdir(k) and not _yra_kese(k)):
-            reikia.append(("paprika", PAPRIKA_REPO, DYDZIAI_MB["paprika"]))
-        # Skyryba tik lietuviu kalbai - kitoms modelis skyrybos neprimeta.
-        if not _yra_kese(SKYRYBOS_REPO):
-            reikia.append(("skyryba", SKYRYBOS_REPO, DYDZIAI_MB["skyryba"]))
+    # Tikrinam FAILUS, ne kesa: tai, ka padejo parsisiusk(), guli musu kataloge.
+    for kodas, raktas in (("lt", "lt_ausys"), ("ru", "gigaam")):
+        if kodas in kalbos and onnx_kelias(raktas) is None:
+            reikia.append((raktas, ONNX_MODELIAI[raktas]["repo"], DYDZIAI_MB[raktas]))
 
-    # Vienas failas dviem kalbom: jei pazymeta bent viena is ju, reikia karta.
-    if ("ru" in kalbos or "en" in kalbos) and not _yra_kese(LARGE_REPO):
+    if "en" in kalbos and not _yra_kese(LARGE_REPO):
         reikia.append(("large", LARGE_REPO, DYDZIAI_MB["large"]))
 
     return reikia
@@ -86,6 +88,14 @@ def parsisiusk(raktas, repo, pranesk=None):
     from huggingface_hub import snapshot_download
     if pranesk:
         pranesk(repo)
+    from modeliai import ONNX_MODELIAI, onnx_vietos
+    if raktas in ONNX_MODELIAI:
+        # Antroji vieta - duomenu katalogas (pirmoji, salia programos, Program
+        # Files atveju rasyti neleidzia). allow_patterns = TIK reikalingi failai.
+        vieta = onnx_vietos(raktas)[1]
+        os.makedirs(vieta, exist_ok=True)
+        snapshot_download(repo, local_dir=vieta, allow_patterns=ONNX_MODELIAI[raktas]["failai"])
+        return vieta
     if raktas == "paprika":
         vieta = os.path.join(MODELIU_KATALOGAS, "paprika-ct2-int8")
         os.makedirs(vieta, exist_ok=True)

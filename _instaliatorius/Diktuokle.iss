@@ -7,6 +7,8 @@
 ;    gali pasizymeti."
 ; Ka tai duoda, pamatuota: tik lietuviu - 1,9 GB, rusu+anglu - 3,1 GB (tas pats
 ; failas abiem!), visos trys - 5,0 GB. Be varneliu VISIEMS butu 5,0 GB.
+; 0.2 (2026-10-25): kiekviena kalba - savo modelis. Lietuviu ~0,96 GB (LT_ausys,
+; be atskiro skyrybos modelio), rusu ~0,23 GB (GigaAM), anglu ~3,1 GB (large-v3).
 ;
 ; SPRENDIMAI:
 ;  - ONEDIR (seimos sprendimas 15). onefile kaskart isspakuotu 830 MB i temp.
@@ -26,7 +28,7 @@
 ; nebeatrasti failu. Rodomas tekstas ir failo vardas yra du skirtingi dalykai.
 #define AppName      "Diktuoklė"
 #define AppFailams   "Diktuokle"
-#define AppVersion   "0.1"
+#define AppVersion   "0.2"
 #define AppExeName   "Diktuokle.exe"
 #define AppUrl       "https://github.com/RobertasTa/diktuokle"
 
@@ -78,24 +80,24 @@ Name: "ru"; MessagesFile: "compiler:Languages\Russian.isl"
 [CustomMessages]
 lt.KalbuPuslapis=Diktavimo kalbos
 lt.KalbuAprasas=Kokiomis kalbomis norite diktuoti?
-lt.KalbuPaaiskinimas=Pažymėkite tik tai, ko jums reikia. Kiekvienai kalbai reikia savo modelio; jis parsisiunčiamas vieną kartą, pirmą kartą paleidus programą:%n%n    Lietuvių ~1,9 GB    Rusų arba anglų ~3,1 GB%n%nRusų ir anglų kalbos naudoja tą patį modelį, tad pasirinkus abi nieko papildomai nesiunčiama. Galima pasirinkti daugiausia dvi kalbas. Pirmoji pažymėta nustato ir pačios programos kalbą.
-lt.KalbaLT=Lietuvių (Paprika – lietuvių kalbai pritaikytas modelis)
+lt.KalbuPaaiskinimas=Pažymėkite tik tai, ko jums reikia. Kiekvienai kalbai reikia savo modelio; jis parsisiunčiamas vieną kartą, pirmą kartą paleidus programą:%n%n    Lietuvių ~1 GB    Rusų ~0,23 GB    Anglų ~3,1 GB%n%nGalima pasirinkti daugiausia dvi kalbas. Pirmoji pažymėta nustato ir pačios programos kalbą.
+lt.KalbaLT=Lietuvių (LT_ausys – lietuvių kalbai pritaikytas modelis)
 lt.KalbaRU=Rusų
 lt.KalbaEN=Anglų
 lt.NieckoNepazymeta=Pažymėkite bent vieną kalbą.
 lt.PerDaugKalbu=Galima pasirinkti daugiausia dvi kalbas. Nuimkite vieną varnelę.
 en.KalbuPuslapis=Dictation languages
 en.KalbuAprasas=Which languages do you want to dictate in?
-en.KalbuPaaiskinimas=Pick only what you need. Each language needs its own model, downloaded once on first run:%n%n    Lithuanian ~1.9 GB    Russian or English ~3.1 GB%n%nRussian and English share the same model, so picking both costs nothing extra. You can pick at most two. The first language you tick also sets the program's own language.
-en.KalbaLT=Lithuanian (Paprika - a model fine-tuned for Lithuanian)
+en.KalbuPaaiskinimas=Pick only what you need. Each language needs its own model, downloaded once on first run:%n%n    Lithuanian ~1 GB    Russian ~0.23 GB    English ~3.1 GB%n%nYou can pick at most two. The first language you tick also sets the program's own language.
+en.KalbaLT=Lithuanian (LT_ausys - a model fine-tuned for Lithuanian)
 en.KalbaRU=Russian
 en.KalbaEN=English
 en.NieckoNepazymeta=Please tick at least one language.
 en.PerDaugKalbu=You can pick at most two languages. Please untick one.
 ru.KalbuPuslapis=Языки диктовки
 ru.KalbuAprasas=На каких языках вы хотите диктовать?
-ru.KalbuPaaiskinimas=Отметьте только то, что нужно. Для каждого языка нужна своя модель, она загружается один раз при первом запуске:%n%n    Литовский ~1,9 ГБ    Русский или английский ~3,1 ГБ%n%nРусский и английский используют одну модель, поэтому выбрать оба ничего не стоит дополнительно. Можно выбрать не более двух языков. Первый отмеченный задаёт и язык самой программы.
-ru.KalbaLT=Литовский (Paprika - модель, дообученная для литовского)
+ru.KalbuPaaiskinimas=Отметьте только то, что нужно. Для каждого языка нужна своя модель, она загружается один раз при первом запуске:%n%n    Литовский ~1 ГБ    Русский ~0,23 ГБ    Английский ~3,1 ГБ%n%nМожно выбрать не более двух языков. Первый отмеченный задаёт и язык самой программы.
+ru.KalbaLT=Литовский (LT_ausys - модель, дообученная для литовского)
 ru.KalbaRU=Русский
 ru.KalbaEN=Английский
 ru.NieckoNepazymeta=Отметьте хотя бы один язык.
@@ -103,6 +105,21 @@ ru.PerDaugKalbu=Можно выбрать не более двух языков.
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
+[InstallDelete]
+; 0.2 (2026-10-25): PRIES diegiant isvalom 0.1 paketus, kuriu 0.2 nebenaudoja.
+; Inno failus tik perraso, o nereikalingu NETRINA - atnaujinant liktu torch ir
+; skyrybos paketai (~0,5 GB). Vardais, ne visas _internal: zmogus galejo
+; pasirinkti diegimo kataloga, kuriame guli dar kas nors. Nustatymai ir modeliai
+; guli %LOCALAPPDATA%\Diktuokle - jie cia neliečiami.
+Type: filesandordirs; Name: "{app}\_internal\torch"
+Type: filesandordirs; Name: "{app}\_internal\torch-*.dist-info"
+Type: filesandordirs; Name: "{app}\_internal\punctuators"
+Type: filesandordirs; Name: "{app}\_internal\punctuators-*.dist-info"
+Type: filesandordirs; Name: "{app}\_internal\sentencepiece"
+Type: filesandordirs; Name: "{app}\_internal\sentencepiece-*.dist-info"
+Type: filesandordirs; Name: "{app}\_internal\omegaconf"
+Type: filesandordirs; Name: "{app}\_internal\omegaconf-*.dist-info"
 
 [Files]
 Source: "..\dist\Diktuokle\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs

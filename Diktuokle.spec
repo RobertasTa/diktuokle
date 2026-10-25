@@ -20,42 +20,43 @@ from PyInstaller.utils.hooks import collect_all, collect_submodules
 
 KATALOGAS = "diktuokle"
 
-# torch itraukiamas VISAS: ji tempia `punctuators` kraunant skyrybos modeli
-# (pamatuota 2026-09-11 - `import punctuators` jo neuztraukia, o modelio
-# krovimas uztraukia). Diske jis 0,53 GB, ne 2 GB, kaip buvo spėta plane.
-torch_d, torch_b, torch_h = collect_all("torch")
-punct_d, punct_b, punct_h = collect_all("punctuators")
+# 0.2 (2026-10-25): torch, punctuators, sentencepiece, omegaconf ISMESTI - juos
+# tempe tik skyrybos modelis, o naujos lietuviu ausys skyryba deda pacios
+# (FLEURS lt kablelio F1 85,6 % - tiek pat, kiek 0.1 su skyrybos modeliu).
+# Vietoj ju - onnx_asr (LT_ausys ir GigaAM). Spike 2026-10-25: exe su onnx-asr
+# + onnxruntime per collect_all atpazino be klaidu.
+oa_d, oa_b, oa_h = collect_all("onnx_asr")
 ct2_d, ct2_b, ct2_h = collect_all("ctranslate2")
 ort_d, ort_b, ort_h = collect_all("onnxruntime")
 fw_d, fw_b, fw_h = collect_all("faster_whisper")
 hf_d, hf_b, hf_h = collect_all("huggingface_hub")
-sp_d, sp_b, sp_h = collect_all("sentencepiece")
-om_d, om_b, om_h = collect_all("omegaconf")
 
 a = Analysis(
     [f"{KATALOGAS}/diktuokle.py"],
     pathex=[KATALOGAS],
-    binaries=torch_b + punct_b + ct2_b + ort_b + fw_b + hf_b + sp_b + om_b,
+    binaries=oa_b + ct2_b + ort_b + fw_b + hf_b,
     datas=[
         (f"{KATALOGAS}/Diktuokle.ico", "."),
         (f"{KATALOGAS}/README.txt", "."),
-    ] + torch_d + punct_d + ct2_d + ort_d + fw_d + hf_d + sp_d + om_d,
+    ] + oa_d + ct2_d + ort_d + fw_d + hf_d,
     hiddenimports=(
         # Musu pačiu moduliai - PyInstaller juos randa per importus, bet
-        # `parsisiuntimas` ir `modeliai` kraunami VELAI (funkciju viduje), tad
-        # nurodom aiskiai.
-        ["kalba", "modeliai", "parsisiuntimas", "punct_restore",
+        # `parsisiuntimas`, `modeliai` ir `ausys` kraunami VELAI (funkciju
+        # viduje), tad nurodom aiskiai.
+        ["kalba", "modeliai", "parsisiuntimas", "ausys",
          "lt_dictation_paprika", "cuda"]
-        + torch_h + punct_h + ct2_h + ort_h + fw_h + hf_h + sp_h + om_h
+        + oa_h + ct2_h + ort_h + fw_h + hf_h
         + collect_submodules("pynput")
     ),
     hookspath=[],
     runtime_hooks=[],
     # Ko NEREIKIA: CUDA bibliotekos (zr. auksciai), tkinter (senoji versija jo
-    # naudojo, naujasis langas - PyQt6), matplotlib ir kt. moksliniai paketai,
-    # kuriuos torch tempia del vidiniu importu.
+    # naudojo, naujasis langas - PyQt6), matplotlib ir kt. moksliniai paketai.
+    # torch ir skyrybos paketai - TYCIA cia: jie liko surinkimo aplinkoje, ir
+    # be sio saraso huggingface_hub vidiniai importai juos vel uztemptu.
     excludes=["nvidia", "tkinter", "matplotlib", "scipy", "pandas",
-              "PIL", "IPython", "notebook", "pytest", "transformers"],
+              "PIL", "IPython", "notebook", "pytest", "transformers",
+              "torch", "punctuators", "sentencepiece", "omegaconf"],
     noarchive=False,
     optimize=0,
 )

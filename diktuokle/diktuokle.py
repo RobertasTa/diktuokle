@@ -62,17 +62,19 @@ from kalba import KALBU_VARDAI, t
 
 # Variklio dalis - is istestuoto failo, kad butu vienas tiesos saltinis.
 from lt_dictation_paprika import (CHANNELS, CHUNK, COMPUTE_TYPE, DEVICE,
-                                  KALBU_SAVYBES, MODEL_SIZE, PAPRIKA_COMPUTE,
-                                  PAPRIKA_PATH, SAMPLE_RATE, TRIGGER_KEY,
+                                  KALBU_SAVYBES, MODEL_SIZE,
+                                  SAMPLE_RATE, TRIGGER_KEY,
                                   ZURNALO_FAILAS, apkarpyk_zurnala,
+                                  mikrofono_indeksas, mikrofonu_sarasas,
                                   numbers_to_words, rasyk_nustatymus,
                                   skaityk_nustatymus, tarimas_i_rasyba,
+                                  be_skyrybos, tvarkyk_bruksnius,
                                   tvarkyk_po_skyrybos, words_to_numbers)
 
 CIA = os.path.dirname(os.path.abspath(__file__))
 IKONA = os.path.join(CIA, "Diktuokle.ico")
 README = os.path.join(CIA, "README.txt")
-VERSIJA = "0.1"
+VERSIJA = "0.2"
 KUREJO_PUSLAPIS = "https://github.com/RobertasTa/diktuokle"
 BRIEF_URL = "https://raw.githubusercontent.com/RobertasTa/diktuokle/main/AI_CONSULTANT_BRIEF.md"
 
@@ -88,7 +90,6 @@ if CPU_REZIMAS:
         CPU_GIJOS = int(sys.argv[i + 1])
 IRENGINYS = "cpu" if CPU_REZIMAS else DEVICE
 CT_LARGE = "int8" if CPU_REZIMAS else COMPUTE_TYPE
-CT_PAPRIKA = "int8" if CPU_REZIMAS else PAPRIKA_COMPUTE
 LANGO_VARDAS = f"Diktuoklė [CPU {CPU_GIJOS}]" if CPU_REZIMAS else "Diktuoklė"
 
 STULPELIU = 14               # trumpa: matytis, kad balsas eina, ne oscilografas
@@ -173,9 +174,9 @@ class Diktuokle(QWidget):
         self.frames = []
         self.audio = pyaudio.PyAudio()
         self.stream = None
-        self.model = None
-        self.model_lt = None
-        self.punct = None
+        self.model = None          # large-v3 - nuo 0.2 tik anglu kalbai
+        self.ausys = {}            # "lt"/"ru" -> ausys.OnnxAusys (0.2)
+        self._pasiruoses = False   # krovimas baigtas - galima diktuoti
         self.listener = None
         # Nustatymai issaugomi tarp paleidimu (2026-09-11): su dviem kalbomis be
         # to erzina - kiekvienas startas grazintu ne ta kalba ir ne ta skyryba.
@@ -360,6 +361,8 @@ class Diktuokle(QWidget):
         self._perpiesk_mygtukus()
         self._issaugok(kalba=kodas)
         self._zurnalas(f"Kalba: {vardas} [{kodas}]")
+        if self._pasiruoses:
+            self._busena_pagal_kalba()
 
     # --- Dantratis ir klaustukas -------------------------------------------
     def _rodyk_nustatymus(self):
@@ -373,6 +376,45 @@ class Diktuokle(QWidget):
         v_vir.setChecked(bool(self.windowFlags() & Qt.WindowType.WindowStaysOnTopHint))
         v_vir.triggered.connect(self._perjunk_virsuje)
         meniu.addAction(v_vir)
+
+        # Mikrofonas (2026-09-19). Iki tol programa VISADA eme Windows numatytaji,
+        # ir bet koks naujas USB garso irenginys ja tyliai apkurtindavo - Windows
+        # numatytaji perjungia pats. Taip ir nutiko prijungus koneles dongle:
+        # Diktuokle klause kambario per kolonele, o ne per mikrofona prie burnos.
+        meniu.addSeparator()
+        m_mik = meniu.addMenu(t("Mikrofonas"))
+        dabartinis = self.nust.get("mikrofonas")
+        v_num = QAction(t("Sistemos numatytasis"), self, checkable=True)
+        v_num.setChecked(not dabartinis)
+        v_num.triggered.connect(lambda _=False: self._pasirink_mikrofona(None))
+        m_mik.addAction(v_num)
+        m_mik.addSeparator()
+        # ⛔ PyAudio gali kristi (sutrikusi garso tvarkykle, irenginys atjungiamas
+        # kaip tik sia sekunde). BE sios apsaugos kristu VISAS dantratis, ir zmogus
+        # netektu ne tik mikrofono, bet ir skyrybos, zurnalo, "visada virsuje" -
+        # nauja funkcija uzblokuotu seniai veikiancias. Blogiausiu atveju dingsta
+        # tik saraso eilutes; "Sistemos numatytasis" lieka ir grazina i darba.
+        try:
+            irenginiai = mikrofonu_sarasas()
+        except Exception as e:
+            irenginiai = []
+            self._zurnalas("Mikrofonu saraso nepavyko gauti: %s" % e, "warn")
+        rastas = False
+        for _i, vardas in irenginiai:
+            v_m = QAction(vardas, self, checkable=True)
+            sis = (vardas == dabartinis)
+            rastas = rastas or sis
+            v_m.setChecked(sis)
+            # `v=vardas` butinas: be jo visos lambda gautu PASKUTINI kilpos varda.
+            v_m.triggered.connect(lambda _=False, v=vardas: self._pasirink_mikrofona(v))
+            m_mik.addAction(v_m)
+        # Isimintas mikrofonas atjungtas - sakom tai garsiai. Tyliai grizti prie
+        # numatytojo reisktu kartoti ta pacia bėdą, del kurios visa tai daroma.
+        if dabartinis and not rastas:
+            m_mik.addSeparator()
+            v_ding = QAction(t("{} — neprijungtas").format(dabartinis), self)
+            v_ding.setEnabled(False)
+            m_mik.addAction(v_ding)
 
         meniu.addSeparator()
         # Zurnalas - DVI varneles, ne viena (2026-09-11). Pirmoji ijungia
@@ -403,12 +445,18 @@ class Diktuokle(QWidget):
         apacia = [t("Garsas ir tekstas lieka šiame kompiuteryje")]
         if not self.nust["zurnalas"]:
             apacia.append(t("Žurnalas nerašomas"))
-        # Sakom TIESA apie tai, kas kalba klauso. Jei Paprikos nera, zmogus turi
-        # tai matyti - kitaip jis manytu, kad girdi geriausia, ka turim.
-        if self.model_lt is not None or PAPRIKA_PATH is not None:
-            apacia.append(t("Ausys: Paprika — Kristijonas Jakubsonas"))
-        else:
-            apacia.append(t("Ausys: bendrasis modelis (Paprika neįdiegta)"))
+        # Sakom TIESA apie tai, kas kalba klauso - kiekvienai idiegtai kalbai.
+        # Jei modelis nepakilo, zmogus turi tai matyti, ne speti. Modeliu ir
+        # autoriu vardai neverciami (zr. kalba.py - pavardes del paieskos).
+        vardai = {"lt": "LT_ausys — Kristijonas Jakubsonas",
+                  "ru": "GigaAM v3 — SberDevices",
+                  "en": "Whisper large-v3 — OpenAI"}
+        for kodas in self.kalbos:
+            yra = self.model is not None if kodas == "en" else kodas in self.ausys
+            if yra or not self._pasiruoses:
+                apacia.append(t("Ausys: {}").format(vardai[kodas]))
+            else:
+                apacia.append(t("Ausys: {} — modelio nėra").format(KALBU_VARDAI[kodas]))
         for tekstas in apacia:
             v = QAction(tekstas, self)
             v.setEnabled(False)
@@ -466,6 +514,17 @@ class Diktuokle(QWidget):
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, bool(ijungta))
         self.show()
         self._issaugok(virsuje=bool(ijungta))
+
+    def _pasirink_mikrofona(self, vardas):
+        """Issaugo mikrofono VARDA (None = sistemos numatytasis).
+
+        Varda, ne numeri: numeriai slankioja, kai irenginiai prisijungia ar
+        atsijungia (`mikrofono_indeksas`). Perkrauti nereikia - `_pradek_irasyma`
+        varda i indeksa verčia kaskart is naujo, tad kitas diktavimas jau eis
+        per pasirinkta mikrofona.
+        """
+        self._issaugok(mikrofonas=vardas)
+        self._zurnalas("Mikrofonas: %s" % (vardas or "sistemos numatytasis"), "info")
 
     def _perjunk_zurnala(self, ijungta):
         """Technikos zurnalas: irenginys, modeliu krovimo laikai, klaidos.
@@ -542,9 +601,9 @@ class Diktuokle(QWidget):
         virsus.addLayout(info)
         lay.addLayout(virsus)
 
-        ausys = QLabel(t("Lietuviškos ausys — Paprika, Kristijonas Jakubsonas (CC BY 4.0)\n"
-                         "Skyryba — punct_restore, Kristijonas Jakubsonas (Apache 2.0)\n"
-                         "Variklis — faster-whisper (MIT)"))
+        ausys = QLabel(t("Lietuviškos ausys — LT_ausys: kmynas v4, Kristijonas Jakubsonas (CC BY 4.0)\n"
+                         "Rusiškos ausys — GigaAM v3, SberDevices (MIT)\n"
+                         "Varikliai — onnx-asr (MIT), faster-whisper (MIT)"))
         ausys.setStyleSheet("color: #9a9a9a; font-size: 12px;")
         lay.addWidget(ausys)
 
@@ -696,6 +755,11 @@ class Diktuokle(QWidget):
         self._siusti_cuda = False
         if CPU_REZIMAS:
             return                      # zmogus pats prase procesoriaus
+        # Nuo 0.2 plokste reikalinga TIK anglu kalbai (large-v3): lietuviu ir
+        # rusu ausys sukasi procesoriuje greiciau, nei Paprika sukosi plokstėje.
+        # Kam anglu nereikia, tam 1,7 GB biblioteku siulyti nera ko.
+        if "en" not in self.kalbos:
+            return
         try:
             import cuda
             if not cuda.plokste_yra() or cuda.bibliotekos_yra():
@@ -715,10 +779,6 @@ class Diktuokle(QWidget):
 
     # --- Modeliai ----------------------------------------------------------
     def _krauk_modelius(self):
-        # global - funkcijos PRADZIOJE (Python reikalauja pries pirma panaudojima).
-        # Sie trys gali pasikeisti cia pat: krentant is CUDA i procesoriu ir
-        # atsiradus ka tik parsisiustai Paprikai.
-        global IRENGINYS, CT_LARGE, CT_PAPRIKA, PAPRIKA_PATH
         self.busena_sig.emit(t("Kraunu…"), "#ffaa00")
         # Siuntimas - fono gijoje, be jokiu langu (juos jau parode GUI gija).
         if getattr(self, "_siusti", None):
@@ -733,12 +793,48 @@ class Diktuokle(QWidget):
                     # Nenutraukiam visko del vieno: gal kita kalba pavyks.
                     self._zurnalas(f"{raktas} PARSISIUSTI NEPAVYKO: {e}", "warn")
             self._siusti = []
-            # Paprikos kelias galejo ka tik atsirasti - perklausiam is naujo.
+
+        # Lietuviu ir rusu ausys (0.2) - procesoriuje, CUDA joms nereikia.
+        # Kiekviena kalba atskirai: nepakilus vienai, kita vis tiek veikia.
+        from modeliai import ONNX_MODELIAI, onnx_kelias, onnx_vietos
+        for kodas in self.kalbos:
+            raktas = KALBU_SAVYBES[kodas]["modelis"]
+            if raktas not in ONNX_MODELIAI:
+                continue
+            kelias = onnx_kelias(raktas)
+            if kelias is None:
+                self._zurnalas(f"{raktas} nerastas; ieskota: " + " | ".join(onnx_vietos(raktas)),
+                               "warn")
+                continue
             try:
-                from modeliai import paprikos_kelias
-                PAPRIKA_PATH = paprikos_kelias()
-            except Exception:
-                pass
+                t0 = time.time()
+                from ausys import OnnxAusys
+                self.ausys[kodas] = OnnxAusys(ONNX_MODELIAI[raktas]["tipas"], kelias,
+                                              CPU_GIJOS if CPU_REZIMAS else 0)
+                self._zurnalas(f"{raktas} uzkrautas per {time.time() - t0:.1f} s")
+            except Exception as e:
+                self._zurnalas(f"{raktas} NEPAKILO: {e}", "warn")
+
+        if "en" in self.kalbos:
+            self._krauk_large()
+        self._pasiruoses = True
+        self._busena_pagal_kalba()
+        self._start_klausytoja()
+
+    def _busena_pagal_kalba(self):
+        """Pasiruoses - tik jei SIOS kalbos modelis yra. Kitaip zmogus spaustu
+        Ctrl ir nesuprastu, kodel nieko neatsiranda."""
+        yra = self.model is not None if self.language == "en" else self.language in self.ausys
+        if yra:
+            self.busena_sig.emit(t("Pasiruošęs"), "#4ADE80")
+        else:
+            self.busena_sig.emit(t("Modelio nėra"), "#ff6a6a")
+
+    def _krauk_large(self):
+        """large-v3 - nuo 0.2 tik anglu kalbai. Visa CUDA logika liko kaip buvo."""
+        # global - funkcijos PRADZIOJE (Python reikalauja pries pirma panaudojima).
+        # Sie du gali pasikeisti cia pat: krentant is CUDA i procesoriu.
+        global IRENGINYS, CT_LARGE
         # CUDA bibliotekos: parsisiunciam, jei zmogus leido, ir ijungiam, jei yra.
         # PRIES kraunant modelius - ctranslate2 DLL ieskos tada, kai jam reikes.
         if not CPU_REZIMAS:
@@ -755,11 +851,11 @@ class Diktuokle(QWidget):
                 else:
                     # Biblioteku nera - CUDA nepavyks; nebandom, is karto CPU.
                     # Sutaupom ~5 s (krovimas i plokste + patikra + perkrovimas).
-                    IRENGINYS, CT_LARGE, CT_PAPRIKA = "cpu", "int8", "int8"
+                    IRENGINYS, CT_LARGE = "cpu", "int8"
                     self._zurnalas("CUDA biblioteku nera - is karto procesorius")
             except Exception as e:
                 self._zurnalas(f"CUDA paruosimas nepavyko: {e}", "warn")
-                IRENGINYS, CT_LARGE, CT_PAPRIKA = "cpu", "int8", "int8"
+                IRENGINYS, CT_LARGE = "cpu", "int8"
 
         gijos = CPU_GIJOS if CPU_REZIMAS else 0
         self._zurnalas(f"irenginys: {IRENGINYS}" + (f", giju {CPU_GIJOS}" if CPU_REZIMAS else ""))
@@ -778,44 +874,18 @@ class Diktuokle(QWidget):
             self._zurnalas(f"{IRENGINYS} nepavyko ({e}); bandom procesoriu", "warn")
             try:
                 t0 = time.time()
-                IRENGINYS, CT_LARGE, CT_PAPRIKA = "cpu", "int8", "int8"
+                IRENGINYS, CT_LARGE = "cpu", "int8"
                 gijos = os.cpu_count() or 4
                 self.model = WhisperModel(MODEL_SIZE, device="cpu", compute_type="int8",
                                           cpu_threads=gijos)
                 self._zurnalas(f"{MODEL_SIZE} uzkrautas ant CPU per {time.time() - t0:.1f} s")
             except Exception as e2:
                 self._zurnalas(f"MODELIS NEPAKILO: {e2}", "warn")
+                self.model = None
                 return
 
-        # Paprika gali buti nerasta (svetimas kompiuteris, kur jos niekas nepadejo).
-        # Tada NEKRINTAM ir nedarom lietuviu kalbos neveikiancios: krentam i
-        # large-v3. Jis lietuviskai silpnesnis (musu matavimu 25,95 % WER pries
-        # Paprikos 7,63 %), bet blogiau yra geriau, nei niekaip - svarbu, kad
-        # zmogus ZINOTU, ir tai pasakyta dantratyje.
-        if PAPRIKA_PATH is None:
-            self.model_lt = None
-            from modeliai import kur_ieskota
-            self._zurnalas("Paprika nerasta; lietuviu kalba suksis ant "
-                           + MODEL_SIZE + ". Ieskota: " + " | ".join(kur_ieskota()))
-        else:
-            try:
-                t0 = time.time()
-                self.model_lt = WhisperModel(PAPRIKA_PATH, device=IRENGINYS,
-                                             compute_type=CT_PAPRIKA, cpu_threads=gijos)
-                self._zurnalas(f"Paprika uzkrauta per {time.time() - t0:.1f} s ({CT_PAPRIKA})")
-            except Exception as e:
-                self.model_lt = None
-                self._zurnalas(f"PAPRIKA NEPAKILO: {e}", "warn")
-
-        try:
-            t0 = time.time()
-            from punct_restore import Punctuator
-            self.punct = Punctuator()
-            self.punct.restore("apsilimas")
-            self._zurnalas(f"Skyryba paruosta per {time.time() - t0:.1f} s")
-        except Exception as e:
-            self.punct = None
-            self._zurnalas(f"SKYRYBA NEPAKILO: {e}", "warn")
+        # Paprika ir skyrybos modelis cia buvo krauti iki 0.2 - nebereikia:
+        # lietuviu ausys skyryba deda pacios (ausys.py, parsisiuntimas.py).
 
         # ⚠️ CUDA PATIKRA ATPAZINIMU, ne krovimu (2026-09-11, Roberto testas).
         # ctranslate2 modeli i vaizdo plokste UZKRAUNA net tada, kai cuBLAS nera:
@@ -829,9 +899,6 @@ class Diktuokle(QWidget):
         # kai zmogus paspaudzia Ctrl.
         if IRENGINYS != "cpu" and not self._plokste_tikrai_veikia():
             self._perkrauk_i_cpu()
-
-        self.busena_sig.emit(t("Pasiruošęs"), "#4ADE80")
-        self._start_klausytoja()
 
     def _plokste_tikrai_veikia(self):
         """True, jei modelis sugeba ATPAZINTI, ne tik uzsikrauti."""
@@ -849,10 +916,9 @@ class Diktuokle(QWidget):
             return False
 
     def _perkrauk_i_cpu(self):
-        """Perkrauna tuos pacius modelius procesoriuje. Lietuviu kalbai svarbu
-        NEPRARASTI Paprikos - be jos kokybe nukristu nuo 7,63 % iki 25,95 % WER."""
-        global IRENGINYS, CT_LARGE, CT_PAPRIKA
-        IRENGINYS, CT_LARGE, CT_PAPRIKA = "cpu", "int8", "int8"
+        """Perkrauna large-v3 procesoriuje (nuo 0.2 jis vienintelis plokstėje)."""
+        global IRENGINYS, CT_LARGE
+        IRENGINYS, CT_LARGE = "cpu", "int8"
         gijos = os.cpu_count() or 4
         try:
             t0 = time.time()
@@ -860,17 +926,8 @@ class Diktuokle(QWidget):
                                       cpu_threads=gijos)
             self._zurnalas(f"{MODEL_SIZE} perkrautas i CPU per {time.time() - t0:.1f} s")
         except Exception as e:
+            self.model = None
             self._zurnalas(f"CPU PERKROVIMAS NEPAVYKO: {e}", "warn")
-            return
-        if PAPRIKA_PATH:
-            try:
-                t0 = time.time()
-                self.model_lt = WhisperModel(PAPRIKA_PATH, device="cpu",
-                                             compute_type="int8", cpu_threads=gijos)
-                self._zurnalas(f"Paprika perkrauta i CPU per {time.time() - t0:.1f} s")
-            except Exception as e:
-                self.model_lt = None
-                self._zurnalas(f"Paprika i CPU nepakilo: {e}", "warn")
 
     # --- Klavisai ----------------------------------------------------------
     def _start_klausytoja(self):
@@ -909,13 +966,19 @@ class Diktuokle(QWidget):
 
     # --- Irasymas ----------------------------------------------------------
     def _pradek_irasyma(self):
-        if self.recording or self.model is None:
+        if self.recording or not self._pasiruoses:
             return
         self.recording = True
         self.frames = []
         try:
+            # Mikrofonas is nustatymu: VARDAS -> sios akimirkos indeksas. None
+            # (nieko nepasirinkta arba irenginys dinges) = sistemos numatytasis,
+            # t. y. elgesys, koks buvo iki 2026-09-19. `self.audio` paduodam, kad
+            # nekurtume antros PyAudio instancijos - klavisas jau nuspaustas.
             self.stream = self.audio.open(format=pyaudio.paInt16, channels=CHANNELS,
                                           rate=SAMPLE_RATE, input=True,
+                                          input_device_index=mikrofono_indeksas(
+                                              self.nust.get("mikrofonas"), self.audio),
                                           frames_per_buffer=CHUNK)
             threading.Thread(target=self._irasymo_ciklas, daemon=True).start()
             self.busena_sig.emit(t("Klausau"), "#ff6a6a")
@@ -978,15 +1041,21 @@ class Diktuokle(QWidget):
                 "ru": "Это правильная русская речь.",
                 "en": "This is correct English speech with punctuation.",
             }[kodas]
-            # Lietuviu - Paprika (Kristijono fine-tune), rusu ir anglu - tas pats
-            # large-v3: vienas failas, dvi kalbos.
-            naudoti_paprika = KALBU_SAVYBES[kodas]["modelis"] == "paprika"
-            modelis = self.model_lt if (naudoti_paprika and self.model_lt) else self.model
+            # Nuo 0.2: lietuviu - LT_ausys, rusu - GigaAM (onnx-asr, procesoriuje,
+            # ilgas irasas kerpamas pauzėse - ausys.py); anglu - large-v3 kaip buvo.
+            # LT/RU uzuomina nenaudojama: onnx ausys initial_prompt neturi.
             t0 = time.time()
-            segmentai, _ = modelis.transcribe(audio=garsas, language=kodas, beam_size=5,
-                                              vad_filter=True, initial_prompt=uzuomina)
-            tekstas = " ".join(s.text.strip() for s in segmentai).strip()
-            kuris = "Paprika" if modelis is self.model_lt else MODEL_SIZE
+            if kodas in self.ausys:
+                tekstas = self.ausys[kodas].atpazink(garsas)
+                kuris = KALBU_SAVYBES[kodas]["modelis"]
+            elif kodas == "en" and self.model is not None:
+                segmentai, _ = self.model.transcribe(audio=garsas, language=kodas, beam_size=5,
+                                                     vad_filter=True, initial_prompt=uzuomina)
+                tekstas = " ".join(s.text.strip() for s in segmentai).strip()
+                kuris = MODEL_SIZE
+            else:
+                self._zurnalas(f"Kalbai {kodas} modelio nera - neatpazinta", "warn")
+                return
             self._zurnalas(f"[{kuris}] {time.time() - t0:.2f} s")
 
             if tekstas:
@@ -998,32 +1067,34 @@ class Diktuokle(QWidget):
                 else:
                     # Girdeti galima bet kaip, rasyti - pagal standarta.
                     tekstas = tarimas_i_rasyba(numbers_to_words(tekstas, kodas), kodas)
-                if self.punct and KALBU_SAVYBES[kodas]["skyryba"] and self.skyryba_on:
-                    try:
-                        t1 = time.time()
-                        atstatyta, st = self.punct.restore(tekstas)
-                        atstatyta = tvarkyk_po_skyrybos(atstatyta)
-                        if st["refused"]:
-                            self._zurnalas(f"[skyryba] atmesta {st['refused']}")
-                        self._zurnalas(f"[skyryba] {(time.time() - t1) * 1000:.0f} ms")
-                        tekstas = atstatyta
-                    except Exception as e:
-                        self._zurnalas(f"[skyryba] nepavyko: {e}", "warn")
+                # Skyryba nuo 0.2 deda pacios lietuviu ausys; varnele lieka ir
+                # sprendzia, ar zmogus jos nori. Ijungta - tie patys 09-08
+                # pataisymai, kaip po skyrybos modelio; isjungta - kaip 0.1 be
+                # skyrybos: mazosios, be zenklu.
+                if KALBU_SAVYBES[kodas]["skyryba"]:
+                    tekstas = (tvarkyk_po_skyrybos(tekstas) if self.skyryba_on
+                               else be_skyrybos(tekstas))
+                if kodas == "ru":
+                    tekstas = tvarkyk_bruksnius(tekstas)
 
                 self._zurnalas(f"[OK] {tekstas}", "tekstas")
                 pyperclip.copy(tekstas)
                 time.sleep(0.05)
+                # ⚠️ macOS (2026-09-12): ten klijuojama Command+V, o Ctrl+V nedaro
+                # NIEKO - tekstas atsidurtu iskarpineje ir dingtu be zenklo.
+                klijuok = (keyboard.Key.cmd if sys.platform == "darwin"
+                           else keyboard.Key.ctrl_l)
                 ctrl = keyboard.Controller()
-                ctrl.press(keyboard.Key.ctrl_l)
+                ctrl.press(klijuok)
                 ctrl.tap("v")
-                ctrl.release(keyboard.Key.ctrl_l)
-                ctrl.release(keyboard.Key.ctrl_l)
+                ctrl.release(klijuok)
+                ctrl.release(klijuok)
             else:
                 self._zurnalas("[!] Nieko neatpazinta")
         except Exception as e:
             self._zurnalas(f"Atpazinimo klaida: {e}", "warn")
         finally:
-            self.busena_sig.emit(t("Pasiruošęs"), "#4ADE80")
+            self._busena_pagal_kalba()
 
     def closeEvent(self, event):
         # ⚠️ Roberto testas 2026-09-11: uzdare langa, o PROCESAS LIKO (987 MB,
@@ -1067,8 +1138,29 @@ if __name__ == "__main__":
     # abu klausytu R-Ctrl ir tekstas isikilijuotu du kartus. Pavadintas mutex -
     # antras paleidimas ji randa uzimta (ERROR_ALREADY_EXISTS = 183), pasako ir
     # iseina. Rankena laikoma globaliai, kad gyventu visa procesa.
-    _mutex = ctypes.windll.kernel32.CreateMutexW(None, False, "Local\\ClaudeGifts.Diktuokle")
-    if ctypes.windll.kernel32.GetLastError() == 183:
+    #
+    # ⚠️ macOS/Linux (2026-09-12): `ctypes.windll` ten NEEGZISTUOJA ir si eilute
+    # mete AttributeError DAR PRIES langa - programa mirdavo be jokio zenklo.
+    # Ne Windows sistemose tas pats darbas daromas failo uzraktu (flock): jis
+    # atsilaisvina PATS, kai procesas baigiasi, net jei jis buvo nuzudytas.
+    if sys.platform == "win32":
+        _mutex = ctypes.windll.kernel32.CreateMutexW(None, False,
+                                                     "Local\\ClaudeGifts.Diktuokle")
+        _jau_paleista = ctypes.windll.kernel32.GetLastError() == 183
+    else:
+        import fcntl
+        # Tas pats katalogas, kur zurnalas - jo kelias jau importuotas, ir jis
+        # turi atsargini varianta sistemoms be LOCALAPPDATA.
+        _uzrakto_failas = os.path.join(os.path.dirname(ZURNALO_FAILAS),
+                                       "diktuokle.lock")
+        os.makedirs(os.path.dirname(_uzrakto_failas), exist_ok=True)
+        _uzraktas = open(_uzrakto_failas, "w")     # globaliai - kad gyventu procesa
+        try:
+            fcntl.flock(_uzraktas, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            _jau_paleista = False
+        except OSError:
+            _jau_paleista = True
+    if _jau_paleista:
         app = QApplication(sys.argv)
         # Sasajos kalba ir cia - antras paleidimas ivyksta pries langa, tad
         # nustatymus nuskaitom atskirai (pigu: vienas mazas JSON).

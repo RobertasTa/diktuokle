@@ -17,6 +17,7 @@ nvidia-cudnn-cu12), tik be pip - wheel yra paprastas zip, is jo istraukiam TIK
 11 DLL failu. Versijos = tos, kurios veikia Roberto venv'e su ctranslate2 4.7.1.
 """
 import ctypes
+import sys
 import io
 import json
 import os
@@ -56,6 +57,11 @@ def plokste_yra():
     """Ar kompiuteryje yra NVIDIA tvarkykle. nvcuda.dll ateina su tvarkykle,
     ne su musu programa - jei jo nera, plokstes arba nera, arba ji be tvarkyklių,
     ir abiem atvejais siulyti 1,6 GB butu nesamone."""
+    # ⚠️ Ne Windows (2026-09-12): `ctypes.windll` neegzistuoja, o musu CUDA
+    # rinkinys yra Windows DLL. macOS NVIDIA plokstes neturi is viso, tad
+    # atsakymas ten visada NE - ir programa lieka ant procesoriaus.
+    if sys.platform != "win32":
+        return False
     try:
         ctypes.windll.LoadLibrary("nvcuda.dll")
         return True

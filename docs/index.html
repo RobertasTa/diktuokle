@@ -71,18 +71,18 @@
   <div class="grid">
     <div class="card"><h3>Bet kurioje programoje</h3><p>Word, naršyklė, susirašinėjimas, buhalterinė programa — tekstas atsiranda ten, kur mirksi žymeklis. Laikai dešinį Ctrl ir kalbi, paleidai — įrašyta.</p></div>
     <div class="card"><h3>Veikia be interneto</h3><p>Kalbos atpažinimas sukasi tavo kompiuteryje. Garsas ir tekstas iš jo neišeina niekada. Jokių paskyrų, jokio mėnesinio mokesčio, jokio necenzūrinių žodžių filtro.</p></div>
-    <div class="card"><h3>Lietuviškos ausys</h3><p>Lietuvių kalbą atpažįsta Paprika — Kristijono Jakubsono modelis, mokytas iš 3 281 val. lietuviškos šnekos. Bendrasis Whisper daro 26 % žodžių klaidų, Paprika — 7,6 % (savoje srityje).</p></div>
+    <div class="card"><h3>Lietuviškos ausys</h3><p>Nuo 0.2 lietuvių kalbą atpažįsta LT_ausys — Kristijono Jakubsono modelis „kmynas", mokytas iš ~3 087 val. lietuviškos šnekos. Autoriaus komandos — 17,9 % žodžių klaidų (senoji Paprika — 22,8 %), ilgas diktavimas — 10,2 % (Paprika — 32,4 %).</p></div>
     <div class="card"><h3>Skyryba ir didžiosios pačios</h3><p>„Labas, aš esu diktuoklė, jūsų pagalbininkas" — kablelis ir didžioji raidė sudėti automatiškai. Skaičiai su lietuviškais linksniais: „penkių lentų po aštuoniolika milimetrų" → 5 lentų po 18 mm.</p></div>
     <div class="card"><h3>Lietuvių, rusų, anglų</h3><p>Diegiant renkiesi iki dviejų kalbų. Laikydamas Ctrl spusteli → ir kalbi kita kalba nekeldamas piršto.</p></div>
-    <div class="card"><h3>Greita su vaizdo plokšte</h3><p>Turi NVIDIA? Programa ją aptinka pati ir pasiūlo parsisiųsti bibliotekas — tada sakinys atpažįstamas per 0,2 s. Be plokštės — apie 3 s, ant procesoriaus.</p></div>
+    <div class="card"><h3>Greita be vaizdo plokštės</h3><p>Lietuvių ir rusų kalba sukasi procesoriuje: komanda — per 0,05 s, minutė diktavimo — per kelias sekundes. Vaizdo plokštė reikalinga tik anglų kalbai pagreitinti.</p></div>
   </div>
 </section>
 
 <section class="wrap">
   <h2>Kaip atrodo</h2>
   <div class="shots">
-    <img src="dantratis.png" alt="Dantračio meniu: skyryba, visada viršuje, žurnalo jungikliai, „Ausys: Paprika — Kristijonas Jakubsonas"">
-    <img src="dialogas_modeliai.png" alt="Pirmas paleidimas: reikia parsisiųsti kalbos modelius — apie 5 GB — Taip / Ne">
+    <img src="dantratis.png" alt="Dantračio meniu: skyryba, visada viršuje, žurnalo jungikliai (paveikslėlis iš 0.1)">
+    <img src="dialogas_modeliai.png" alt="Pirmas paleidimas: reikia parsisiųsti kalbos modelius — Taip / Ne (paveikslėlis iš 0.1)">
     <img src="dialogas_nvidia.png" alt="Rasta NVIDIA vaizdo plokštė — parsisiųsti bibliotekas?">
     <img src="diegimas_kalbos.png" alt="Diegimas lietuviškai: diktavimo kalbų pasirinkimas">
   </div>
@@ -90,22 +90,23 @@
 
 <section class="wrap">
   <h2>Ko laukti pirmą kartą</h2>
-  <p>Instaliatorius mažas (~180 MB). Modeliai parsisiunčiami <b>pirmą kartą paleidus</b>, tik pasirinktoms kalboms:</p>
+  <p>Instaliatorius mažas (~90 MB). Modeliai parsisiunčiami <b>pirmą kartą paleidus</b>, tik pasirinktoms kalboms:</p>
   <table>
     <tr><th>Pasirinkta</th><th>Parsisiųs</th></tr>
-    <tr><td>tik lietuvių</td><td>~1,9 GB</td></tr>
-    <tr><td>tik rusų arba tik anglų</td><td>~3,1 GB</td></tr>
-    <tr><td>lietuvių + rusų ar anglų</td><td>~5 GB</td></tr>
-    <tr><td>rusų + anglų</td><td>~3,1 GB — tas pats modelis abiem</td></tr>
+    <tr><td>tik lietuvių</td><td>~1 GB</td></tr>
+    <tr><td>tik rusų</td><td>~0,23 GB</td></tr>
+    <tr><td>tik anglų</td><td>~3,1 GB</td></tr>
+    <tr><td>lietuvių + rusų</td><td>~1,2 GB</td></tr>
+    <tr><td>lietuvių + anglų</td><td>~4,1 GB</td></tr>
   </table>
-  <p class="zyma">Programa paklaus prieš siųsdama. Būsenoje rašys „Siunčiu…" kelias–dešimt minučių, paskui „Kraunu…", paskui „Pasiruošęs". Tai vienkartinis veiksmas — toliau internetas nereikalingas.</p>
+  <p class="zyma">Programa paklaus prieš siųsdama. Būsenoje rašys „Siunčiu…" nuo minutės iki dešimties, paskui „Kraunu…", paskui „Pasiruošęs". Tai vienkartinis veiksmas — toliau internetas nereikalingas.</p>
   <p class="zyma"><b>Windows parodys mėlyną langą „Windows protected your PC".</b> Programa neturi mokamo kodo parašo — tai ne virusas. Spausk „More info" → „Run anyway". Failo sha256 suma yra Release puslapyje šalia failo.</p>
 </section>
 
 <section class="wrap">
   <h2>Ausys — Kristijono Jakubsono</h2>
-  <p>Šios programos širdis nėra mūsų. Lietuvišką šneką atpažįsta <a href="https://huggingface.co/kristijonas/paprika-whisper-lt-v3"><b>Paprika</b></a> — Kristijono Jakubsono <code>whisper-large-v3-turbo</code> pritaikymas lietuvių kalbai, mokytas iš LIEPA-3 garsyno. Skyrybą ir didžiąsias sudeda jo paties <a href="https://github.com/kristijonasatpro/paprika"><code>punct_restore</code></a>. Abu jis paskelbė <b>atvirai</b> — todėl ši programa apskritai galėjo atsirasti. Mes sudėjom aplink jo darbą langą, klavišus, skaičių tvarkymą ir diegimą.</p>
-  <p class="zyma">Pamatuota mūsų stende: bendrasis Whisper lietuviškai — 25,95 % žodžių klaidų, Paprika — 7,63 %. Testo aibė kilusi iš LIEPOS, tad Paprikai tai sava sritis; jo paties kortelė sako, kad svetimai sričiai teisingo skaičiaus nėra.</p>
+  <p>Šios programos širdis nėra mūsų. Lietuvišką šneką atpažįsta <a href="https://huggingface.co/RobertasTa/lt-ausys"><b>LT_ausys</b></a> — Kristijono Jakubsono modelis <a href="https://huggingface.co/kristijonas/kmynas-parakeet-lt-v4"><b>kmynas v4</b></a> (NVIDIA Parakeet, pritaikytas lietuvių kalbai iš LIEPA-3 garsyno), mūsų perkeltas į ONNX, kad suktųsi procesoriuje. Skyrybą ir didžiąsias jis deda pats. Kristijonas savo darbą paskelbė <b>atvirai</b> — todėl ši programa apskritai galėjo atsirasti. Mes sudėjom aplink jo darbą langą, klavišus, skaičių tvarkymą ir diegimą.</p>
+  <p class="zyma">Iki 0.2 čia dirbo jo Paprika. Palyginta tame pačiame kompiuteryje, tais pačiais garsais: autoriaus komandos — LT_ausys 17,9 % žodžių klaidų, Paprika 22,8 %; ilgas diktavimas — 10,2 % ir 32,4 %; komanda procesoriuje — 0,05 s ir 3 s. Rusiškai klauso GigaAM v3 (SberDevices): 0,11 s sakiniui procesoriuje vietoj 7,2 s. <a href="https://github.com/RobertasTa/diktuokle/blob/main/docs/palyginimas-0.2.md">Visos lentelės ir kaip matuota</a>.</p>
 </section>
 
 <section class="wrap">
@@ -123,8 +124,8 @@
 
 <section class="wrap padekos">
   <h2>Ačiū</h2>
-  <p><b>Kristijonui Jakubsonui</b> — už ausis ir už tai, kad paskelbė jas atvirai. Tai jo darbas, ne mūsų.</p>
-  <p><b>Vilniaus universitetui</b> ir LIEPA-3 komandai — už garsyną. <b>SYSTRAN</b> už faster-whisper, <b>OpenAI</b> už Whisper, <b>1-800-BAD-CODE</b> už skyrybos modelį, <b>jrsoftware</b> už Inno Setup — kuriam lietuvių kalbos nebuvo, tad parašėm patys.</p>
+  <p><b>Kristijonui Jakubsonui</b> — už ausis (pirma Paprika, dabar kmynas) ir už tai, kad paskelbė jas atvirai. Tai jo darbas, ne mūsų.</p>
+  <p><b>Vilniaus universitetui</b> ir LIEPA-3 komandai — už garsyną. <b>SberDevices</b> už GigaAM, <b>istupakov</b> už onnx-asr, <b>NVIDIA</b> už Parakeet, <b>SYSTRAN</b> už faster-whisper, <b>OpenAI</b> už Whisper, <b>1-800-BAD-CODE</b> už skyrybos modelį, tarnavusį iki 0.2, <b>jrsoftware</b> už Inno Setup — kuriam lietuvių kalbos nebuvo, tad parašėm patys.</p>
   <p>Diktuoklė yra ausys; <a href="https://robertasta.github.io/reginute/">Reginutė</a> — burna. Kartu jie yra lietuviškai kalbantis kompiuteris be interneto.</p>
 </section>
 

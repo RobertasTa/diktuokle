@@ -18,10 +18,18 @@ Kalbi - tekstas atsiranda ten, kur mirksi zymeklis. Bet kurioje programoje.
 
 AUSYS - KRISTIJONO JAKUBSONO
 ----------------------------
-  Lietuviska sneka atpazista PAPRIKA - Kristijono Jakubsono modelis,
-  mokytas is LIEPA-3 garsyno. Skyryba ir didziasias deda jo paties
-  punct_restore. Abu jis paskelbe ATVIRAI - todel si programa ir yra.
-  Mes sudejom aplink jo darba langa, klavisus ir diegima. Aciu.
+  Lietuviska sneka atpazista LT_AUSYS - Kristijono Jakubsono modelis
+  "kmynas" (mokytas is LIEPA-3 garsyno), musu paverstas ONNX formatu,
+  kad suktusi procesoriuje. Skyryba ir didziasias jis deda pats.
+  Kristijonas savo darba paskelbe ATVIRAI - todel si programa ir yra.
+  Mes sudejom aplink ji langa, klavisus ir diegima. Aciu.
+
+  Iki versijos 0.2 cia dirbo jo Paprika. LT_ausys klysta reciau (musu
+  matavimu komandoms 17,9 % zodziu pries 23,2 %), ilgo diktavimo
+  nebenukerpa ir procesoriuje veikia greiciau, nei Paprika veike su
+  vaizdo plokste.
+
+  Rusiska sneka atpazista GigaAM v3 (SberDevices) - irgi procesoriuje.
 
 
 DIKTAVIMAS
@@ -45,8 +53,9 @@ LAIKANT DESINI Ctrl
 REZIMAS ABC (zodziai)
 ---------------------
   Skaiciai rasomi zodziais, kaip pasakyti: "dvidesimt penki".
-  Skyryba ir didziosios dedamos automatiskai. Taska sakinio gale
-  sakyk pats - "taskas" - arba tiesiog tesk kita sakini.
+  Skyryba ir didziosios dedamos automatiskai. Tasko pacioje gale
+  programa nededa - diktuojant dalimis jis atsidurtu vidury minties.
+  Kelis sakinius is eiles skiria pati.
 
 
 REZIMAS 123 (skaitmenys) - lietuviu ir rusu kalboms
@@ -66,9 +75,13 @@ REZIMAS 123 (skaitmenys) - lietuviu ir rusu kalboms
 
 GREITIS
 -------
-  Ant procesoriaus - apie 3 s kiekvienam sakiniui, trumpam ar ilgam
-  (Whisper visada apdoroja 30 s langa). Su NVIDIA vaizdo plokste -
-  apie 0,15 s. Programa plokste aptinka pati ir pasiulo parsisiusti
+  Lietuviu ir rusu kalbos - procesoriuje, vaizdo plokstes nereikia:
+  komandai apie 0,1 s, minutei diktavimo - 1-3 s (pagal procesoriu).
+  Ilgas irasas pats sukarpomas pauzese.
+
+  Anglu kalba (Whisper large-v3) procesoriuje leta - apie 3-7 s
+  sakiniui. Su NVIDIA vaizdo plokste - apie 0,15 s. Jei pasirinkta
+  anglu kalba, programa plokste aptinka pati ir pasiulo parsisiusti
   bibliotekas (~1,7 GB, viena karta).
 
 
@@ -76,6 +89,9 @@ NUSTATYMAI (krumpliaratis)
 --------------------------
   Skyryba ir didziosios    - ijungti / isjungti.
   Visada virsuje           - langas neuzsidengia kitais.
+  Mikrofonas               - kuri klausyti. Numatytasis - Windows; jei
+                             Windows ji pats perjungia (nauja USB kolonele,
+                             ausines), pasirink savaji - programa jo laikysis.
   Rasyti derinimo zurnala  - ISJUNGTA. Ijungus rasomi tik techniniai
                              dalykai: irenginys, laikai, klaidos.
   Zurnale saugoti ir teksta - ISJUNGTA. Ijungus i faila kris VISKAS,
@@ -88,8 +104,10 @@ JEI KAS NE TAIP
 ---------------
   Ijunk derinimo zurnala (krumpliaratis) ir pakartok. Zurnalas guli
   %LOCALAPPDATA%\Diktuokle\diktuokle.log - meniu ji atidaro.
-  Eilute [Paprika] arba [large-v3] rodo, kiek uztruko; jei modelis
-  nepakilo - bus parasyta, kodel.
+  Eilute [lt_ausys], [gigaam] arba [large-v3] rodo, kiek uztruko; jei
+  modelis nepakilo - bus parasyta, kodel. Busenoje "Modelio nera" -
+  tos kalbos modelis neparsisiuste: paleisk programa is naujo, ji
+  pasiulys parsisiusti.
 
   Neradai atsakymo? "?" -> "Klauskite DI" atidaro pokalbi su asistentu,
   kuris jau bus gaves autoriaus instruktaza apie sia programa.
@@ -97,10 +115,11 @@ JEI KAS NE TAIP
 
 KAS VIDUJE
 ----------
-  Lietuviskos ausys: Paprika (Kristijonas Jakubsonas, CC BY 4.0)
-  Rusu ir anglu:     Whisper large-v3 (OpenAI, MIT)
-  Skyryba:           punct_restore (Kristijonas Jakubsonas, Apache 2.0)
-  Variklis:          faster-whisper (SYSTRAN, MIT)
+  Lietuviskos ausys: LT_ausys - kmynas v4 (Kristijonas Jakubsonas,
+                     CC BY 4.0), huggingface.co/RobertasTa/lt-ausys
+  Rusu:              GigaAM v3 (SberDevices, MIT)
+  Anglu:             Whisper large-v3 (OpenAI, MIT)
+  Varikliai:         onnx-asr (MIT), faster-whisper (SYSTRAN, MIT)
 
   Kodas: https://github.com/RobertasTa/diktuokle
 

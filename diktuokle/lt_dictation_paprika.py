@@ -7,6 +7,7 @@ Usage: pythonw lt_dictation_v2.py
 
 import os
 import re
+import sys
 import threading
 import time
 # tkinter - NEPRIVALOMAS (2026-09-11). Sis failas yra ir SENOJI tkinter sasaja,
@@ -113,17 +114,24 @@ NUSTATYMAI_PAGAL_NUTYLEJIMA = {
     "virsuje": True,
     "zurnalas": False,         # DOVANOJE ISJUNGTA: nieko i diska
     "zurnale_tekstas": False,  # ir tuo labiau ne tekstas
+    # Mikrofono VARDAS (ne numeris - zr. `mikrofono_indeksas`). None = sistemos
+    # numatytasis, kaip buvo iki 2026-09-19. Raktas butinas CIA: `skaityk_nustatymus`
+    # priima tik ZINOMUS raktus, tad be sios eilutes issaugotas pasirinkimas butu
+    # tyliai isnykes.
+    "mikrofonas": None,
 }
 
 # Kurios kalbos apskritai galimos ir kuo jos atpazistamos.
-#   modelis="paprika" - lietuviskos ausys (Kristijono fine-tune);
-#   modelis="bendras" - large-v3, kuris moka IR rusu, IR anglu (tas pats failas).
+#   modelis="lt_ausys" - lietuviskos ausys (Kristijono kmynas v4, ONNX; 0.2);
+#   modelis="gigaam"   - rusu ausys (GigaAM v3 e2e, ONNX; 0.2);
+#   modelis="bendras"  - large-v3 (faster-whisper) - nuo 0.2 tik anglu kalbai.
+# Iki 0.2 lietuviu buvo "paprika", rusu - "bendras"; kodel pakeista - ausys.py.
 # skaiciai=False reiskia, kad "123" rezimas tai kalbai neveikia: skaiciu
 # pletiklis turi tik LT ir RU zodynus, o tyliai blogai geriau nei nieko.
 KALBU_SAVYBES = {
-    "lt": {"modelis": "paprika", "skaiciai": True,  "skyryba": True},
-    "ru": {"modelis": "bendras", "skaiciai": True,  "skyryba": False},
-    "en": {"modelis": "bendras", "skaiciai": False, "skyryba": False},
+    "lt": {"modelis": "lt_ausys", "skaiciai": True,  "skyryba": True},
+    "ru": {"modelis": "gigaam",   "skaiciai": True,  "skyryba": False},
+    "en": {"modelis": "bendras",  "skaiciai": False, "skyryba": False},
 }
 
 
@@ -196,10 +204,129 @@ def apkarpyk_zurnala():
     except OSError:
         pass
 
+# Windows nukreipikliai, ne tikri mikrofonai: abu reiskia "sistemos numatytasis",
+# o ta pasirinkima meniu jau turi pirma eilute. Palikti juos reikstu tris skirtingus
+# budus pasakyti ta pati - ir zmogus galvotu, kad tai trys irenginiai.
+_NUKREIPIKLIAI = ("microsoft sound mapper", "primary sound capture driver")
+
+# Bevardis irasas, pvz. "Input ()" - Windows tokio nerodo, o meniu jis atrodytu
+# kaip mikrofonas be vardo.
+_re_bevardis = re.compile(r"[A-Za-z]*\s*\(\s*\)")
+
+
+def _zmogiskas_vardas(vardas):
+    """Windows resurso eilute -> tai, ka zmogus gali perskaityti.
+
+    PyAudio kartais grazina ne varda, o nuoroda i DLL resursa, pvz.:
+        Input (@System32\\drivers\\bthhfenum.sys,#4;%1 Hands-Free HF Audio%0 ;(Xiaomi 12T Pro))
+    Toks irasas 2026-09-19 istempe meniu per puse ekrano. Tikrasis vardas slepiasi
+    tarp `%1` ir `%0`, o prietaisas - paskutiniuose skliaustuose.
+    """
+    m = re.search(r"%1\s*(.*?)\s*%0", vardas)
+    if not m:
+        return vardas
+    branduolys = m.group(1).strip()
+    skliaustai = re.findall(r"\(([^()]*)\)", vardas)
+    prietaisas = skliaustai[-1].strip() if skliaustai else ""
+    if branduolys and prietaisas:
+        return "%s (%s)" % (branduolys, prietaisas)
+    return branduolys or vardas
+
+
+def mikrofonu_sarasas(p=None):
+    """Mikrofonai zmogui: kiekvienas VIENA karta, veikianciu keliu.
+
+    Grazina [(indeksas, vardas), ...]. `p` - jau atidarytas `pyaudio.PyAudio()`;
+    paduodam ji tada, kai kviečiam pries irasyma: nauja instancija kainuotu
+    dešimtis ms, o klavisas jau nuspaustas ir zmogus jau kalba.
+
+    ⛔ PyAudio ta pati mikrofona rodo per kelis Windows kelius (MME, DirectSound,
+    WASAPI, WDM-KS), o MME dar ir vardus kerpa ties 31 simboliu - todel
+    "Microphone (EMEET Adapter A3" ir "Microphone (EMEET Adapter A350)" atrodo
+    kaip du skirtingi irenginiai, ir zmogus renkasi grazesni. Vardus lyginam pagal
+    PREFIKSA: jei vienas yra kito pradzia, tai tas pats daiktas. Rodom ilgesni
+    varda, o naudojam PIRMA indeksa - PyAudio pirma grazina MME, ir butent jis
+    16 kHz priima be klausimu (WASAPI ties 16 kHz meta "Invalid sample rate" -
+    pamatuota giminingoje programoje 2026-09-18).
+    """
+    import pyaudio
+    savas = p is None
+    if savas:
+        p = pyaudio.PyAudio()
+    try:
+        matyti, sarasas = {}, []
+        for i in range(p.get_device_count()):
+            try:
+                d = p.get_device_info_by_index(i)
+            except Exception:
+                continue
+            if int(d.get("maxInputChannels", 0)) <= 0:
+                continue
+            vardas = _zmogiskas_vardas(str(d.get("name", "")).strip())
+            if not vardas:
+                continue
+            # ⛔ Rodom tik tai, ka zmogus mato ir savo Windows garso nustatymuose.
+            # 2026-09-19 pamatuota: Windows ten rode DU irenginius, PyAudio - devynis.
+            # Skirtuma sudaro nukreipikliai i numatytaji ir bevardziai irasai, kuriu
+            # Windows nerodo niekada - programoje jie atrodytu kaip papildomi mikrofonai.
+            if vardas.lower().startswith(_NUKREIPIKLIAI):
+                continue
+            if _re_bevardis.fullmatch(vardas):
+                continue
+            rastas = None
+            for turimas, vieta in matyti.items():
+                if vardas.startswith(turimas) or turimas.startswith(vardas):
+                    rastas = vieta
+                    break
+            if rastas is not None:
+                # Tas pats irenginys kitu keliu: indekso NEKEICIAM, tik pasiimam
+                # pilnesni varda.
+                if len(vardas) > len(sarasas[rastas][1]):
+                    sarasas[rastas] = (sarasas[rastas][0], vardas)
+                continue
+            matyti[vardas] = len(sarasas)
+            sarasas.append((i, vardas))
+        return sarasas
+    finally:
+        if savas:                    # svetimos instancijos neuzdarinejam
+            p.terminate()
+
+
+def mikrofono_indeksas(vardas, p=None):
+    """Isiminta mikrofono VARDA paverčia sios akimirkos PyAudio indeksu.
+
+    ⛔ Nustatymuose laikom VARDA, ne numeri: numeriai SLANKIOJA. Pamatuota gyvai
+    2026-09-19 - prijungus USB garso adapteri Windows perstume irenginiu eile ir
+    dar pats pasikeite numatytaji mikrofona. Programa, isiminusi numeri, imtu
+    VISAI KITA mikrofona: tyliai, be klaidos, ir atrodytu kaip jos gedimas.
+
+    None (sistemos numatytasis) arba dinges irenginys grazina None - PyAudio tada
+    ima numatytaji, t. y. elgiasi lygiai taip, kaip iki 2026-09-19.
+    """
+    if not vardas:
+        return None
+    sarasas = mikrofonu_sarasas(p)
+    for i, v in sarasas:
+        if v == vardas:
+            return i
+    for i, v in sarasas:            # MME nukirptas vardas - lyginam prefiksa
+        if v.startswith(vardas) or vardas.startswith(v):
+            return i
+    return None
+
+
 SAMPLE_RATE = 16000
 CHANNELS = 1
 CHUNK = 1024
-TRIGGER_KEY = keyboard.Key.ctrl_r
+# Paleidiklis. Windows/Linux - desinys Ctrl (Roberto pasirinkimas 09-08).
+# ⚠️ macOS (2026-09-12): Apple nesiojamuose DESINIOJO Ctrl KLAVISO NERA IS VISO -
+# ten kaireje yra control/option/command, desineje tik command ir option. Todel
+# ant obuolio paleidziam desiniu Option (alt_r): jis fiziskai YRA ir nesikerta su
+# iklijavimu, kuris ten daromas Command+V.
+if sys.platform == "darwin":
+    TRIGGER_KEY = keyboard.Key.alt_r
+else:
+    TRIGGER_KEY = keyboard.Key.ctrl_r
 # --- END CONFIG ---
 
 # --- SKYRYBOS SUTVARKYMAS PO MODELIO ---
@@ -222,6 +349,19 @@ def tvarkyk_po_skyrybos(text):
     if text.endswith("."):
         text = text[:-1]
     return text
+
+
+def be_skyrybos(text):
+    """Varnele "Skyryba ir didziosios" isjungta (0.2). Iki 0.2 tada ateidavo
+    gryna Paprika - mazosios, be zenklu; LT_ausys zenklus deda pati, tad juos
+    nuimam. Tik zenklus PRIES tarpa ar gala: "3,5" lieka skaicius."""
+    return re.sub(r"[.,!?;:](?=\s|$)", "", text).lower()
+
+
+def tvarkyk_bruksnius(text):
+    """GigaAM kartais prilipdo bruksni prie zodzio: "Европа— континент"
+    (FLEURS ru: 3 is 775). Rusu tekste bruksnys - su tarpais abipus."""
+    return re.sub(r"(\w)—", r"\1 —", text)
 
 
 # --- NUMBER CONVERSION ---
@@ -486,23 +626,32 @@ def words_to_numbers(text, lang="lt"):
     if lang == "lt":
         vienetai = {**LT_VIENETAI_LINKSNIAI, **vienetai}
 
-    text = re.sub(r'[.,!?;:]', '', text)
+    # Skyrybos zenklai NUO 0.2 NEBEISMETAMI (2026-10-25): iki tol tekstas ateidavo
+    # be skyrybos (Paprika), o ja uzdedavo skyrybos modelis jau PO sito. Naujos
+    # ausys skyryba deda pacios, tad zenklas atkerpamas nuo zodzio, o grazinamas
+    # po skaiciaus: "dvidešimt penki," -> "25,". Tekstui be skyrybos - kaip buvo.
     result = []
     grupe = []
+    galas = [""]               # zenklai po paskutinio grupes zodzio
 
     def _uzdaryk():
         if grupe:
-            result.append(_surink_grupe(grupe, vienetai, sudetiniai))
+            result.append(_surink_grupe(grupe, vienetai, sudetiniai) + galas[0])
             grupe.clear()
+        galas[0] = ""
 
     for word in text.split():
-        clean = word.lower().strip()
+        m = re.match(r"^(.*?)([.,!?;:]*)$", word)
+        clean = m.group(1).lower().strip()
         if clean in vienetai or clean in sudetiniai:
+            if galas[0]:              # "du, trys" - du skaiciai, ne 23
+                _uzdaryk()
             grupe.append(clean)
+            galas[0] = m.group(2)
         else:
             _uzdaryk()
             if clean in num_map:      # zenklas: taskas, kablelis, bruksnys
-                result.append(num_map[clean])
+                result.append(num_map[clean] + m.group(2))
             elif clean:
                 result.append(word)
     _uzdaryk()
@@ -515,7 +664,11 @@ def numbers_to_words(text, lang="lt"):
         num = match.group(0)
         if num in digit_map:
             return digit_map[num]
-        return " ".join(digit_map.get(d, d) for d in num)
+        # Daugiazenklis paliekamas skaitmenimis (2026-10-25): skaitmuo po
+        # skaitmens ("25" -> "du penki", "36 пробегов" -> "три шесть пробегов")
+        # buvo klaida, o ne zodziai. Rusu ausys skaicius raso skaitmenimis
+        # (FLEURS ru: 144 sakiniai is 775), tad rusiskai ji kliudavo nuolat.
+        return num
     return re.sub(r'\d+', replace_number, text)
 
 class DictationApp:

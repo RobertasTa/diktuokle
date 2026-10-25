@@ -67,6 +67,9 @@ _RU = {
     # знаков препинания" - imam ju zodi, kuri zmogus jau mate.
     "Skyryba ir didžiosios": "Знаки препинания и заглавные",
     "Visada viršuje": "Поверх других окон",
+    "Mikrofonas": "Микрофон",
+    "Sistemos numatytasis": "Системный по умолчанию",
+    "{} — neprijungtas": "{} — не подключён",
     "Rašyti derinimo žurnalą": "Вести журнал диагностики",
     "Žurnale saugoti ir tekstą": "Сохранять в журнале и текст",
     "Žurnalas: {}…": "Журнал: {}…",
@@ -76,10 +79,9 @@ _RU = {
     # ⚠️ Pavarde palikta lotyniskai TYCIA: transliteruota "Кристийонас
     # Якубсонас" atrodo svetimai ir, svarbiau, su ja zmogus jo nerastu nei
     # GitHub'e, nei Hugging Face. Autoriu vardai neverciami.
-    "Ausys: Paprika — Kristijonas Jakubsonas":
-        "Распознавание: Paprika — Kristijonas Jakubsonas",
-    "Ausys: bendrasis modelis (Paprika neįdiegta)":
-        "Распознавание: общая модель (Paprika не установлена)",
+    "Ausys: {}": "Распознавание: {}",
+    "Ausys: {} — modelio nėra": "Распознавание: {} — нет модели",
+    "Modelio nėra": "Нет модели",
     # --- Zurnalo teksto ijungimo klausimas ---
     "Nuo šiol į žurnalą bus įrašomas VISAS padiktuotas tekstas —\n"
     "viskas, ką pasakysite: laiškai, sveikatos reikalai, balsu\n"
@@ -139,12 +141,12 @@ _RU = {
     "Padiktuotas tekstas yra jūsų — DI jį tik užrašo.":
         "Создано с помощью ИИ: код писал Claude, иконка — ИИ.\n"
         "Надиктованный текст — ваш, ИИ его только записывает.",
-    "Lietuviškos ausys — Paprika, Kristijonas Jakubsonas (CC BY 4.0)\n"
-    "Skyryba — punct_restore, Kristijonas Jakubsonas (Apache 2.0)\n"
-    "Variklis — faster-whisper (MIT)":
-        "Литовское распознавание — Paprika, Kristijonas Jakubsonas (CC BY 4.0)\n"
-        "Пунктуация — punct_restore, Kristijonas Jakubsonas (Apache 2.0)\n"
-        "Движок — faster-whisper (MIT)",
+    "Lietuviškos ausys — LT_ausys: kmynas v4, Kristijonas Jakubsonas (CC BY 4.0)\n"
+    "Rusiškos ausys — GigaAM v3, SberDevices (MIT)\n"
+    "Varikliai — onnx-asr (MIT), faster-whisper (MIT)":
+        "Литовское распознавание — LT_ausys: kmynas v4, Kristijonas Jakubsonas (CC BY 4.0)\n"
+        "Русское распознавание — GigaAM v3, SberDevices (MIT)\n"
+        "Движки — onnx-asr (MIT), faster-whisper (MIT)",
     "Kūrėjo puslapis:": "Страница автора:",
     # --- Kiti pranesimai ---
     "Diktuoklė jau paleista — žiūrėk užduočių juostoje.":
@@ -164,16 +166,18 @@ _EN = {
     # --- Dantratis ---
     "Skyryba ir didžiosios": "Punctuation and capitals",
     "Visada viršuje": "Always on top",
+    "Mikrofonas": "Microphone",
+    "Sistemos numatytasis": "System default",
+    "{} — neprijungtas": "{} — not connected",
     "Rašyti derinimo žurnalą": "Write a diagnostic log",
     "Žurnale saugoti ir tekstą": "Also store the text in the log",
     "Žurnalas: {}…": "Log: {}…",
     "Garsas ir tekstas lieka šiame kompiuteryje":
         "Audio and text stay on this computer",
     "Žurnalas nerašomas": "No log is written",
-    "Ausys: Paprika — Kristijonas Jakubsonas":
-        "Recognition: Paprika — Kristijonas Jakubsonas",
-    "Ausys: bendrasis modelis (Paprika neįdiegta)":
-        "Recognition: general model (Paprika not installed)",
+    "Ausys: {}": "Recognition: {}",
+    "Ausys: {} — modelio nėra": "Recognition: {} — no model",
+    "Modelio nėra": "No model",
     # --- Zurnalo teksto ijungimo klausimas ---
     "Nuo šiol į žurnalą bus įrašomas VISAS padiktuotas tekstas —\n"
     "viskas, ką pasakysite: laiškai, sveikatos reikalai, balsu\n"
@@ -232,12 +236,12 @@ _EN = {
     "Padiktuotas tekstas yra jūsų — DI jį tik užrašo.":
         "Made with AI: the code was written by Claude, the icon by AI.\n"
         "The dictated text is yours — the AI only writes it down.",
-    "Lietuviškos ausys — Paprika, Kristijonas Jakubsonas (CC BY 4.0)\n"
-    "Skyryba — punct_restore, Kristijonas Jakubsonas (Apache 2.0)\n"
-    "Variklis — faster-whisper (MIT)":
-        "Lithuanian recognition — Paprika, Kristijonas Jakubsonas (CC BY 4.0)\n"
-        "Punctuation — punct_restore, Kristijonas Jakubsonas (Apache 2.0)\n"
-        "Engine — faster-whisper (MIT)",
+    "Lietuviškos ausys — LT_ausys: kmynas v4, Kristijonas Jakubsonas (CC BY 4.0)\n"
+    "Rusiškos ausys — GigaAM v3, SberDevices (MIT)\n"
+    "Varikliai — onnx-asr (MIT), faster-whisper (MIT)":
+        "Lithuanian recognition — LT_ausys: kmynas v4, Kristijonas Jakubsonas (CC BY 4.0)\n"
+        "Russian recognition — GigaAM v3, SberDevices (MIT)\n"
+        "Engines — onnx-asr (MIT), faster-whisper (MIT)",
     "Kūrėjo puslapis:": "Author's page:",
     # --- Kiti pranesimai ---
     "Diktuoklė jau paleista — žiūrėk užduočių juostoje.":
