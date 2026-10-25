@@ -68,6 +68,19 @@ class OnnxAusys:
 
     def atpazink(self, garsas):
         """float32, 16 kHz, mono -> tekstas ("" - kalbos nebuvo)."""
-        dalys = [self.modelis.recognize(garsas[a:b], sample_rate=SR).strip()
-                 for a, b in gabalai(garsas)]
-        return " ".join(d for d in dalys if d)
+        tekstas = ""
+        for a, b in gabalai(garsas):
+            d = self.modelis.recognize(garsas[a:b], sample_rate=SR).strip()
+            if not d:
+                continue
+            # Ausys kiekviena gabala pradeda didziaja - jos mano, kad tai sakinio
+            # pradzia. Roberto pasaka 2026-10-25: "mociute var Virdavo",
+            # "geriausia Vakarai" - kirpta per pauze sakinio viduryje. Jei
+            # ankstesnis gabalas sakinio NEBAIGE, mazinam. Kaina: vardas, pataikes
+            # i gabalo pradzia sakinio viduryje, gaus mazaja - tai rečiau.
+            # Visas didziasias ("LDSP") paliekam.
+            if tekstas and tekstas[-1] not in ".?!…" and d[:1].isupper() \
+                    and not d.split()[0].isupper():
+                d = d[0].lower() + d[1:]
+            tekstas = f"{tekstas} {d}" if tekstas else d
+        return tekstas

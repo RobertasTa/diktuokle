@@ -346,6 +346,11 @@ def tvarkyk_po_skyrybos(text):
         return w if w.isupper() else w[0] + w[1].lower() + w[2:]
 
     text = re.sub(r"\b[A-ZĄČĘĖĮŠŲŪŽ]{2}[a-ząčęėįšųūž]+", _mazink, text)
+    # 3. (0.2, Roberto pasaka 2026-10-25) LT_ausys kartais sulipdo zenklus:
+    #    "spintą.„Kur", "kamuolys?“– paklausė". Pries atidarancias kabutes „ ir
+    #    pries bruksni, po kurio tarpas, - tarpas. "1–2" nelieciamas (be tarpo).
+    text = re.sub(r"([.?!…,:;])„", r"\1 „", text)
+    text = re.sub(r"(?<=\S)([–—])(?=\s)", r" \1", text)
     if text.endswith("."):
         text = text[:-1]
     return text
