@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diktuoklė — offline voice dictation for Windows (Lithuanian, Russian, English)</title>
+<meta name="description" content="Free, open-source push-to-talk dictation for Windows: hold right Ctrl, speak Lithuanian, Russian or English — the text appears in any program. Speech recognition runs on your own computer; the audio never leaves it.">
+<meta property="og:title" content="Diktuoklė — offline voice dictation for Windows">
+<meta property="og:description" content="Hold Ctrl, speak, the text appears. Lithuanian, Russian, English — on your own computer, free.">
+<meta property="og:image" content="https://robertasta.github.io/diktuokle/diktavimas.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<link rel="alternate" hreflang="lt" href="https://robertasta.github.io/diktuokle/">
+<link rel="alternate" hreflang="en" href="https://robertasta.github.io/diktuokle/en/">
+<link rel="alternate" hreflang="ru" href="https://robertasta.github.io/diktuokle/ru/">
+<link rel="alternate" hreflang="de" href="https://robertasta.github.io/diktuokle/de/">
+<link rel="alternate" hreflang="x-default" href="https://robertasta.github.io/diktuokle/en/">
+<style>
+  :root{
+    --bg:#010d24; --bg2:#06173a; --card:#0b1f47;
+    --text:#f5f7fc; --muted:#bcc4d6; --amber:#e8b84b; --line:#1d3560;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;line-height:1.6}
+  a{color:var(--amber)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
+  .kalba{display:flex;justify-content:flex-end;gap:8px;padding-top:16px;font-size:.92rem;color:var(--muted)}
+  .kalba b{color:var(--amber)}
+  header{padding:32px 0 36px;text-align:center}
+  header img.hero{width:100%;max-width:820px;border-radius:10px;border:1px solid var(--line);margin-bottom:26px}
+  h1{font-size:2.4rem;font-weight:700;letter-spacing:.5px}
+  .tagline{font-size:1.25rem;color:var(--muted);margin-top:10px}
+  .amber{color:var(--amber);font-style:italic;margin-top:8px}
+  .actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:30px 0 8px}
+  .btn{display:inline-block;padding:12px 26px;border-radius:8px;font-weight:600;text-decoration:none}
+  .btn-amber{background:var(--amber);color:#1a1200}
+  .btn-ghost{border:1px solid var(--line);color:var(--text)}
+  .lang{color:var(--muted);font-size:.92rem;margin-top:14px}
+  section{padding:36px 0;border-top:1px solid var(--line)}
+  h2{font-size:1.4rem;margin-bottom:18px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+  .card h3{font-size:1.02rem;margin-bottom:6px}
+  .card p{color:var(--muted);font-size:.95rem}
+  .shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .shots img{width:100%;border-radius:8px;border:1px solid var(--line)}
+  .ask{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:24px}
+  .ask p{color:var(--muted)}
+  .ask p+p{margin-top:12px}
+  code{font-family:Consolas,"Courier New",monospace;background:#00081a;padding:2px 6px;border-radius:4px}
+  .zyma{color:var(--muted);font-size:.95rem;border-left:3px solid var(--amber);padding-left:14px;margin-top:18px}
+  .padekos p{color:var(--muted);font-size:.95rem}
+  .padekos p+p{margin-top:12px}
+  table{border-collapse:collapse;width:100%;margin-top:10px}
+  td,th{border:1px solid var(--line);padding:8px 12px;text-align:left;font-size:.95rem}
+  th{color:var(--muted);font-weight:600}
+  footer{padding:36px 0 48px;text-align:center;color:var(--muted);font-size:.92rem;border-top:1px solid var(--line)}
+  footer .sig{color:var(--amber);font-style:italic;margin-top:6px}
+</style>
+</head>
+<body>
+
+<nav class="kalba wrap" aria-label="Language / Kalba"><a href="../" hreflang="lt" lang="lt">LT</a> · <b>EN</b> · <a href="../ru/" hreflang="ru" lang="ru">RU</a> · <a href="../de/" hreflang="de" lang="de">DE</a></nav>
+
+<header class="wrap">
+  <img class="hero" src="../diktavimas.png" alt="Notepad with a dictated Lithuanian sentence, comma and capital placed automatically; the Diktuoklė window in the corner, status &quot;Ready&quot;">
+  <h1>Diktuoklė</h1>
+  <p class="tagline">Offline voice dictation for Windows — Lithuanian, Russian, English.</p>
+  <p class="amber">Hold Ctrl, speak — the text appears. On your own computer, free.</p>
+  <div class="actions">
+    <a class="btn btn-amber" href="https://github.com/RobertasTa/diktuokle/releases/latest">Download for Windows</a>
+    <a class="btn btn-ghost" href="https://github.com/RobertasTa/diktuokle">Code on GitHub</a>
+  </div>
+  <p class="lang">Full instructions: <a href="https://github.com/RobertasTa/diktuokle/blob/main/README_EN.md">README_EN.md</a></p>
+</header>
+
+<section class="wrap">
+  <h2>What it is</h2>
+  <div class="grid">
+    <div class="card"><h3>In any program</h3><p>Word, a browser, a chat, accounting software — the text lands where the cursor blinks. Hold right Ctrl and speak, release — it is typed.</p></div>
+    <div class="card"><h3>Works offline</h3><p>Speech recognition runs on your computer. Audio and text never leave it. No account, no subscription, no profanity filter.</p></div>
+    <div class="card"><h3>Lithuanian ears</h3><p>Since 0.2 Lithuanian is recognised by LT_ausys — Kristijonas Jakubsonas's model "kmynas", trained on ~3,087 hours of Lithuanian speech. The author's commands: 17.9 % word errors (the older Paprika: 22.8 %); long dictation: 10.2 % (Paprika: 32.4 %).</p></div>
+    <div class="card"><h3>Punctuation by itself</h3><p>Commas and capitals are placed automatically. In "123" mode spoken numbers become digits, inflected Lithuanian forms included: "penkių lentų po aštuoniolika milimetrų" → "5 lentų po 18 milimetrų".</p></div>
+    <div class="card"><h3>Lithuanian, Russian, English</h3><p>Pick up to two languages when installing. While holding Ctrl, press → and keep talking in the other language without lifting your finger.</p></div>
+    <div class="card"><h3>Fast without a graphics card</h3><p>Lithuanian and Russian run on the CPU: about 0.05 s per command, a few seconds per minute of dictation. A graphics card only speeds up English.</p></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>What it looks like</h2>
+  <div class="shots">
+    <img src="../dantratis.png" alt="Gear menu (Lithuanian UI): punctuation, always on top, microphone, log switches, &quot;Recognition: LT_ausys — Kristijonas Jakubsonas&quot;, &quot;GigaAM v3 — SberDevices&quot;">
+    <img src="../dialogas_modeliai.png" alt="First run (Lithuanian UI): language models need downloading — about 1.2 GB — Yes / No">
+    <img src="../dialogas_nvidia.png" alt="NVIDIA graphics card found — download the libraries? (Lithuanian UI)">
+    <img src="../diegimas_kalbos.png" alt="Installer (Lithuanian): choosing the dictation languages">
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>What to expect the first time</h2>
+  <p>The installer is small (~90 MB). The models are downloaded <b>on first launch</b>, only for the languages you picked:</p>
+  <table>
+    <tr><th>Picked</th><th>Download</th></tr>
+    <tr><td>Lithuanian only</td><td>~1 GB</td></tr>
+    <tr><td>Russian only</td><td>~0.23 GB</td></tr>
+    <tr><td>English only</td><td>~3.1 GB</td></tr>
+    <tr><td>Lithuanian + Russian</td><td>~1.2 GB</td></tr>
+    <tr><td>Lithuanian + English</td><td>~4.1 GB</td></tr>
+  </table>
+  <p class="zyma">The program asks before downloading. The status shows "Downloading…" for one to ten minutes, then "Loading…", then "Ready". This happens once — after that no internet is needed. With winget, install with <code>winget install RobertasTa.Diktuokle --interactive</code>, otherwise the language page is skipped.</p>
+  <p class="zyma"><b>Windows will show a blue "Windows protected your PC" screen.</b> The program has no paid code-signing certificate — it is not a virus. Click "More info" → "Run anyway". The file's sha256 is on the Release page next to the file.</p>
+</section>
+
+<section class="wrap">
+  <h2>The ears are Kristijonas Jakubsonas's</h2>
+  <p>The heart of this program is not ours. Lithuanian speech is recognised by <a href="https://huggingface.co/RobertasTa/lt-ausys"><b>LT_ausys</b></a> — Kristijonas Jakubsonas's model <a href="https://huggingface.co/kristijonas/kmynas-parakeet-lt-v4"><b>kmynas v4</b></a> (NVIDIA Parakeet fine-tuned for Lithuanian on the LIEPA-3 corpus), which we converted to ONNX so it runs on the CPU. It places punctuation and capitals itself. Kristijonas published his work <b>openly</b> — that is the only reason this program could exist. We built the window, the keys, number handling and the installer around it.</p>
+  <p class="zyma">Up to 0.2 his Paprika did this job. Compared on the same computer with the same audio: the author's commands — LT_ausys 17.9 % word errors, Paprika 22.8 %; long dictation — 10.2 % and 32.4 %; one command on the CPU — 0.05 s and 3 s. Russian is recognised by GigaAM v3 (SberDevices): 0.11 s per sentence on the CPU instead of 7.2 s. <a href="https://github.com/RobertasTa/diktuokle/blob/main/docs/palyginimas-0.2.md">All tables and how it was measured</a> (in Lithuanian).</p>
+</section>
+
+<section class="wrap">
+  <h2>Privacy, plainly</h2>
+  <p>Audio and text <b>never leave the computer</b>. The internet is needed twice: to download the program, and on first launch for the models. Then you can unplug the cable. The program writes no log unless you switch it on — because it would contain the dictated text itself, and that is your letters, not our business.</p>
+</section>
+
+<section class="wrap">
+  <h2>Stuck? Ask an AI</h2>
+  <div class="ask">
+    <p><b>Not a programmer?</b> In the program click <b>"?" → "No answer here? Ask an AI"</b> — a chat opens with an assistant that has already received the author's briefing about this program: what to ask, what not to claim, what each fault looks like. Ask in your own words.</p>
+    <p>Or paste this into any AI chat: <code>Read https://raw.githubusercontent.com/RobertasTa/diktuokle/main/AI_CONSULTANT_BRIEF.md and help me with Diktuokle.</code></p>
+  </div>
+</section>
+
+<section class="wrap padekos">
+  <h2>Thanks</h2>
+  <p><b>Kristijonas Jakubsonas</b> — for the ears (first Paprika, now kmynas) and for publishing them openly. It is his work, not ours.</p>
+  <p><b>Vilnius University</b> and the LIEPA-3 team — for the corpus. <b>SberDevices</b> for GigaAM, <b>istupakov</b> for onnx-asr, <b>NVIDIA</b> for Parakeet, <b>SYSTRAN</b> for faster-whisper, <b>OpenAI</b> for Whisper, <b>1-800-BAD-CODE</b> for the punctuation model that served until 0.2, <b>jrsoftware</b> for Inno Setup — which had no Lithuanian, so we wrote it ourselves.</p>
+  <p>Diktuoklė is the ears; <a href="https://robertasta.github.io/reginute/en/">Reginutė</a> is the mouth. Together they make a computer that speaks Lithuanian without the internet.</p>
+</section>
+
+<footer class="wrap">
+  <p><a href="https://github.com/RobertasTa/diktuokle">GitHub</a> ·
+     <a href="https://github.com/RobertasTa/diktuokle/releases/latest">Download</a> ·
+     <a href="https://github.com/RobertasTa/diktuokle/blob/main/LICENSE">GPL v3</a> ·
+     <a href="https://github.com/RobertasTa">Other gifts</a></p>
+  <p class="sig">A gift from Claude and Robertas</p>
+</footer>
+
+</body>
+</html>

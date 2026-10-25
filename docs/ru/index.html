@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diktuoklė — голосовая диктовка без интернета для Windows (русский, литовский, английский)</title>
+<meta name="description" content="Бесплатная программа с открытым кодом для Windows: держите правый Ctrl, говорите по-русски, по-литовски или по-английски — текст появляется в любой программе. Распознавание речи работает на вашем компьютере, звук никуда не отправляется.">
+<meta property="og:title" content="Diktuoklė — голосовая диктовка без интернета">
+<meta property="og:description" content="Держите Ctrl, говорите — текст появляется. По-русски, по-литовски, по-английски — на вашем компьютере, бесплатно.">
+<meta property="og:image" content="https://robertasta.github.io/diktuokle/diktavimas.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<link rel="alternate" hreflang="lt" href="https://robertasta.github.io/diktuokle/">
+<link rel="alternate" hreflang="en" href="https://robertasta.github.io/diktuokle/en/">
+<link rel="alternate" hreflang="ru" href="https://robertasta.github.io/diktuokle/ru/">
+<link rel="alternate" hreflang="de" href="https://robertasta.github.io/diktuokle/de/">
+<link rel="alternate" hreflang="x-default" href="https://robertasta.github.io/diktuokle/en/">
+<style>
+  :root{
+    --bg:#010d24; --bg2:#06173a; --card:#0b1f47;
+    --text:#f5f7fc; --muted:#bcc4d6; --amber:#e8b84b; --line:#1d3560;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;line-height:1.6}
+  a{color:var(--amber)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
+  .kalba{display:flex;justify-content:flex-end;gap:8px;padding-top:16px;font-size:.92rem;color:var(--muted)}
+  .kalba b{color:var(--amber)}
+  header{padding:32px 0 36px;text-align:center}
+  header img.hero{width:100%;max-width:820px;border-radius:10px;border:1px solid var(--line);margin-bottom:26px}
+  h1{font-size:2.4rem;font-weight:700;letter-spacing:.5px}
+  .tagline{font-size:1.25rem;color:var(--muted);margin-top:10px}
+  .amber{color:var(--amber);font-style:italic;margin-top:8px}
+  .actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:30px 0 8px}
+  .btn{display:inline-block;padding:12px 26px;border-radius:8px;font-weight:600;text-decoration:none}
+  .btn-amber{background:var(--amber);color:#1a1200}
+  .btn-ghost{border:1px solid var(--line);color:var(--text)}
+  .lang{color:var(--muted);font-size:.92rem;margin-top:14px}
+  section{padding:36px 0;border-top:1px solid var(--line)}
+  h2{font-size:1.4rem;margin-bottom:18px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+  .card h3{font-size:1.02rem;margin-bottom:6px}
+  .card p{color:var(--muted);font-size:.95rem}
+  .shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .shots img{width:100%;border-radius:8px;border:1px solid var(--line)}
+  .ask{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:24px}
+  .ask p{color:var(--muted)}
+  .ask p+p{margin-top:12px}
+  code{font-family:Consolas,"Courier New",monospace;background:#00081a;padding:2px 6px;border-radius:4px}
+  .zyma{color:var(--muted);font-size:.95rem;border-left:3px solid var(--amber);padding-left:14px;margin-top:18px}
+  .padekos p{color:var(--muted);font-size:.95rem}
+  .padekos p+p{margin-top:12px}
+  table{border-collapse:collapse;width:100%;margin-top:10px}
+  td,th{border:1px solid var(--line);padding:8px 12px;text-align:left;font-size:.95rem}
+  th{color:var(--muted);font-weight:600}
+  footer{padding:36px 0 48px;text-align:center;color:var(--muted);font-size:.92rem;border-top:1px solid var(--line)}
+  footer .sig{color:var(--amber);font-style:italic;margin-top:6px}
+</style>
+</head>
+<body>
+
+<nav class="kalba wrap" aria-label="Язык / Language"><a href="../" hreflang="lt" lang="lt">LT</a> · <a href="../en/" hreflang="en" lang="en">EN</a> · <b>RU</b> · <a href="../de/" hreflang="de" lang="de">DE</a></nav>
+
+<header class="wrap">
+  <img class="hero" src="../diktavimas.png" alt="Блокнот с надиктованной литовской фразой, запятая и заглавная буква расставлены автоматически; окно Diktuoklė в углу, статус «Готово»">
+  <h1>Diktuoklė</h1>
+  <p class="tagline">Голосовая диктовка без интернета для Windows — по-русски, по-литовски, по-английски.</p>
+  <p class="amber">Держите Ctrl, говорите — текст появляется. На вашем компьютере, бесплатно.</p>
+  <div class="actions">
+    <a class="btn btn-amber" href="https://github.com/RobertasTa/diktuokle/releases/latest">Скачать для Windows</a>
+    <a class="btn btn-ghost" href="https://github.com/RobertasTa/diktuokle">Код на GitHub</a>
+  </div>
+  <p class="lang">Подробная инструкция (на английском): <a href="https://github.com/RobertasTa/diktuokle/blob/main/README_EN.md">README_EN.md</a></p>
+</header>
+
+<section class="wrap">
+  <h2>Что это</h2>
+  <div class="grid">
+    <div class="card"><h3>В любой программе</h3><p>Word, браузер, переписка, бухгалтерская программа — текст появляется там, где мигает курсор. Держите правый Ctrl и говорите, отпустили — записано.</p></div>
+    <div class="card"><h3>Работает без интернета</h3><p>Распознавание речи идёт на вашем компьютере. Звук и текст никогда его не покидают. Ни аккаунтов, ни абонентской платы, ни фильтра нецензурных слов.</p></div>
+    <div class="card"><h3>Русский — GigaAM</h3><p>С версии 0.2 русскую речь распознаёт GigaAM v3 (SberDevices): около 0,1 с на предложение прямо на процессоре — раньше Whisper large-v3 без видеокарты думал около 7 с. Загрузить нужно всего 0,23 ГБ.</p></div>
+    <div class="card"><h3>Литовский — LT_ausys</h3><p>Литовскую речь распознаёт LT_ausys — модель «kmynas» Кристиёнаса Якубсонаса, обученная на ~3 087 часах литовской речи. Ошибок в словах заметно меньше, чем у прежней Paprika: 17,9 % против 22,8 % на командах автора.</p></div>
+    <div class="card"><h3>Знаки препинания сами</h3><p>Запятые, кавычки и заглавные буквы модель расставляет сама. В режиме «123» числа словами превращаются в цифры: «Двадцать пять рублей, а не тридцать» → «25 рублей, а не 30».</p></div>
+    <div class="card"><h3>Быстро без видеокарты</h3><p>Русский и литовский работают на процессоре: команда — за 0,05–0,2 с, минута диктовки — за несколько секунд. Видеокарта ускоряет только английский. Держа Ctrl, нажмите → — и говорите на другом языке, не отпуская клавишу.</p></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Как это выглядит</h2>
+  <div class="shots">
+    <img src="../dantratis.png" alt="Меню шестерёнки (литовский интерфейс): знаки препинания, поверх окон, микрофон, журнал, «Распознавание: LT_ausys — Kristijonas Jakubsonas», «GigaAM v3 — SberDevices»">
+    <img src="../dialogas_modeliai.png" alt="Первый запуск (литовский интерфейс): нужно загрузить языковые модели — около 1,2 ГБ — Да / Нет">
+    <img src="../dialogas_nvidia.png" alt="Найдена видеокарта NVIDIA — загрузить библиотеки? (литовский интерфейс)">
+    <img src="../diegimas_kalbos.png" alt="Установщик (по-литовски): выбор языков диктовки">
+  </div>
+  <p class="zyma">На снимках интерфейс литовский. Язык интерфейса — первый отмеченный в установщике (порядок там: литовский, русский, английский). Выберете русский без литовского — вся программа будет по-русски; сам установщик тоже есть на русском.</p>
+</section>
+
+<section class="wrap">
+  <h2>Чего ждать в первый раз</h2>
+  <p>Установщик маленький (~90 МБ). Модели загружаются <b>при первом запуске</b> и только для выбранных языков:</p>
+  <table>
+    <tr><th>Выбрано</th><th>Загрузит</th></tr>
+    <tr><td>только русский</td><td>~0,23 ГБ</td></tr>
+    <tr><td>только литовский</td><td>~1 ГБ</td></tr>
+    <tr><td>только английский</td><td>~3,1 ГБ</td></tr>
+    <tr><td>русский + литовский</td><td>~1,2 ГБ</td></tr>
+    <tr><td>русский + английский</td><td>~3,3 ГБ</td></tr>
+  </table>
+  <p class="zyma">Программа спросит перед загрузкой. В строке состояния будет «Загружаю…» от минуты до десяти, затем «Загрузка…», затем «Готово». Это делается один раз — дальше интернет не нужен. Через winget устанавливайте так: <code>winget install RobertasTa.Diktuokle --interactive</code> — иначе страница выбора языков пропускается.</p>
+  <p class="zyma"><b>Windows покажет синее окно «Windows protected your PC».</b> У программы нет платной цифровой подписи — это не вирус. Нажмите «More info» → «Run anyway» («Подробнее» → «Выполнить в любом случае»). Контрольная сумма sha256 файла — на странице Release рядом с файлом.</p>
+</section>
+
+<section class="wrap">
+  <h2>Чьи это «уши»</h2>
+  <p>Сердце программы — не наше. Русскую речь распознаёт <a href="https://github.com/salute-developers/GigaAM"><b>GigaAM v3</b></a> — открытая модель SberDevices (лицензия MIT). Литовскую — <a href="https://huggingface.co/RobertasTa/lt-ausys"><b>LT_ausys</b></a>: модель <a href="https://huggingface.co/kristijonas/kmynas-parakeet-lt-v4"><b>kmynas v4</b></a> Кристиёнаса Якубсонаса (NVIDIA Parakeet, дообученный на литовском корпусе LIEPA-3), которую мы перевели в ONNX, чтобы она работала на процессоре. Английскую — Whisper large-v3 (OpenAI). Мы собрали вокруг них окно, клавиши, обработку чисел и установщик.</p>
+  <p class="zyma">До версии 0.2 русский распознавал Whisper large-v3. На тестовом наборе FLEURS он чуть точнее (3,9 % ошибок в словах против 4,6 % у GigaAM), но без видеокарты тратит около 7,2 с на предложение, а GigaAM — 0,11 с, и загружать нужно 0,23 ГБ вместо 3,1 ГБ. Большинство компьютеров видеокарты NVIDIA не имеют, поэтому выбран GigaAM. <a href="https://github.com/RobertasTa/diktuokle/blob/main/docs/palyginimas-0.2.md">Все таблицы и как измеряли</a> (на литовском).</p>
+</section>
+
+<section class="wrap">
+  <h2>Приватность — прямо</h2>
+  <p>Звук и текст <b>никогда не покидают компьютер</b>. Интернет нужен два раза: скачать программу и при первом запуске — модели. Потом можно вытащить кабель. Журнал программа не ведёт, пока вы сами его не включите — ведь в нём был бы сам надиктованный текст, а это ваши письма, а не наше дело.</p>
+</section>
+
+<section class="wrap">
+  <h2>Не получается? Спросите искусственный интеллект</h2>
+  <div class="ask">
+    <p><b>Не программист?</b> В программе нажмите <b>«?» → «Не нашли ответа? Спросите ИИ»</b> — откроется чат с ассистентом, который уже получил инструкцию автора об этой программе: что спросить, чего нельзя утверждать, как выглядит каждая неполадка. Спрашивайте своими словами, по-русски.</p>
+    <p>Или вставьте в любой чат с ИИ: <code>Прочитай https://raw.githubusercontent.com/RobertasTa/diktuokle/main/AI_CONSULTANT_BRIEF.md и помоги мне с Diktuokle.</code></p>
+  </div>
+</section>
+
+<section class="wrap padekos">
+  <h2>Спасибо</h2>
+  <p><b>SberDevices</b> — за GigaAM и за то, что опубликовали его открыто. <b>Кристиёнасу Якубсонасу</b> — за литовские «уши» (сначала Paprika, теперь kmynas). Это их работа, не наша.</p>
+  <p><b>Вильнюсскому университету</b> и команде LIEPA-3 — за корпус. <b>istupakov</b> — за onnx-asr, <b>NVIDIA</b> — за Parakeet, <b>SYSTRAN</b> — за faster-whisper, <b>OpenAI</b> — за Whisper, <b>jrsoftware</b> — за Inno Setup.</p>
+</section>
+
+<footer class="wrap">
+  <p><a href="https://github.com/RobertasTa/diktuokle">GitHub</a> ·
+     <a href="https://github.com/RobertasTa/diktuokle/releases/latest">Скачать</a> ·
+     <a href="https://github.com/RobertasTa/diktuokle/blob/main/LICENSE">GPL v3</a> ·
+     <a href="https://github.com/RobertasTa">Другие подарки</a></p>
+  <p class="sig">Подарок от Claude и Робертаса</p>
+</footer>
+
+</body>
+</html>
