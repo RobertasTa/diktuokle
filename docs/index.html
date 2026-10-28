@@ -57,6 +57,12 @@
   th{color:var(--muted);font-weight:600}
   footer{padding:36px 0 48px;text-align:center;color:var(--muted);font-size:.92rem;border-top:1px solid var(--line)}
   footer .sig{color:var(--amber);font-style:italic;margin-top:6px}
+  .kita{display:flex;gap:20px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .kita img{width:80px;height:80px;flex:none;display:block}
+  .kita h3{font-size:1.15rem;margin-bottom:6px}
+  .kita p{color:var(--muted);font-size:.95rem}
+  .kita .actions{justify-content:flex-start;margin:16px 0 0}
+  @media (max-width:520px){.kita{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
@@ -128,6 +134,21 @@
   <div class="ask">
     <p><b>Ne programuotojas?</b> Programoje spausk <b>„?" → „Neradote atsakymo? Klauskite DI"</b> — atsidarys pokalbis su asistentu, kuris jau bus gavęs autoriaus instruktažą apie šią programą: ko paklausti, ko negalima teigti, kokie gedimai kaip atrodo. Klausk savo žodžiais, lietuviškai.</p>
     <p>Arba įklijuok į bet kurį DI pokalbį: <code>Perskaityk https://raw.githubusercontent.com/RobertasTa/diktuokle/main/AI_CONSULTANT_BRIEF.md ir padėk man su Diktuokle.</code></p>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Kita mūsų dovana — Skaityklė</h2>
+  <div class="kita">
+    <a href="https://robertasta.github.io/skaitykle/"><img src="skaitykle_ikona.png" alt="Skaityklės ikona — dokumentas ir garsiakalbis"></a>
+    <div>
+      <h3>Skaityklė — tekstas į mp3 lietuvišku balsu</h3>
+      <p>Diktuoklė balsą paverčia tekstu, Skaityklė — atvirkščiai: tekstą paverčia mp3, perskaitytu lietuvišku balsu (Ingutė arba Reginutė). Padiktuok skaidrių komentarus Diktuokle — Skaityklė juos įgarsins. Irgi be interneto ir nemokamai.</p>
+      <div class="actions">
+        <a class="btn btn-amber" href="https://robertasta.github.io/skaitykle/">Apie Skaityklę</a>
+        <a class="btn btn-ghost" href="https://github.com/RobertasTa/skaitykle/releases/latest">Parsisiųsti</a>
+      </div>
+    </div>
   </div>
 </section>
 

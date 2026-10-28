@@ -186,6 +186,10 @@ LT_ausys, kurią programa parsisiunčia (`RobertasTa/lt-ausys`, tik int8 failai)
 
 Iki 0.2 programa parsisiųsdavo Paprika (`kristijonas/paprika-whisper-lt-v3`, CC-BY-4.0, mūsų CTranslate2 kopija) ir skyrybos modelį (`punct_restore`, Apache-2.0; xlm-roberta, 1-800-BAD-CODE, Apache-2.0).
 
+## Kita mūsų dovana — Skaityklė
+
+Diktuoklė balsą paverčia tekstu, **[Skaityklė](https://robertasta.github.io/skaitykle/)** — atvirkščiai: tekstą paverčia mp3, perskaitytu lietuvišku balsu (Ingutė arba Reginutė). Padiktuok skaidrių komentarus Diktuokle — Skaityklė juos įgarsins. Irgi be interneto ir nemokamai. **[Apie Skaityklę](https://robertasta.github.io/skaitykle/)** · [Parsisiųsti](https://github.com/RobertasTa/skaitykle/releases/latest)
+
 ## Ačiū
 
 **Kristijonui Jakubsonui** — už ausis (pirma Paprika, dabar kmynas) ir už tai, kad paskelbė jas atvirai. Tai jo darbas, ne mūsų; mes tik sudėjom aplink jį langą.
