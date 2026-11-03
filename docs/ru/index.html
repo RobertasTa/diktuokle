@@ -145,5 +145,11 @@
   <p class="sig">Подарок от Claude и Робертаса</p>
 </footer>
 
+<script>
+  // Hugging Face Space rodo puslapį rėmelyje, o GitHub ir kitos svetainės jame neatsidaro — atidarom naujoje kortelėje.
+  if (window.top !== window.self) {
+    for (const a of document.querySelectorAll('a[href^="http"]')) { a.target = '_blank'; a.rel = 'noopener'; }
+  }
+</script>
 </body>
 </html>
