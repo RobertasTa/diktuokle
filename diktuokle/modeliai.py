@@ -96,9 +96,16 @@ def kur_ieskota():
 # Is HF imam TIK int8 failus: lt-ausys repo turi ir fp32 (2,5 GB), gigaam -
 # dar penkis variantus. Failu sarasas = tai, ko onnx-asr 0.12.0 iesko
 # (`_get_model_files`), patikrinta 2026-10-25 kraunant is katalogo be tinklo.
+#
+# ⛔ 0.2.1 (2026-11-15): `RobertasTa/lt-ausys` main nuo 14:27 - Datolabs Upelis (RNN-T).
+# Zodziu klaidu jis daro maziau, bet ILGAME diktavime beveik nededa tasku: sakiniu
+# ribas viduryje rado 2,8 % (kmynas 84,7 %), kableliu pames puse
+# (`_darbal/lt_ausys_palyginimas/SKYRYBA_0.2.1.md`). Diktuojant tekstas - tai, ka zmogus
+# mato, tad Diktuoklei lieka kmynas: revizija `v1-kmynas` (HF zyme, failai nekinta).
 ONNX_MODELIAI = {
     "lt_ausys": {
         "repo": "RobertasTa/lt-ausys",
+        "revizija": "v1-kmynas",
         "tipas": "nemo-conformer-tdt",
         "failai": ["config.json", "vocab.txt", "encoder-model.int8.onnx",
                    "decoder_joint-model.int8.onnx"],
@@ -124,6 +131,21 @@ def onnx_kelias(raktas):
     kiekviena faila: nutrukes parsisiuntimas palieka puse katalogo."""
     failai = ONNX_MODELIAI[raktas]["failai"]
     for k in onnx_vietos(raktas):
-        if all(os.path.isfile(os.path.join(k, f)) for f in failai):
+        if all(os.path.isfile(os.path.join(k, f)) for f in failai) and _tinka_tipas(raktas, k):
             return k
     return None
+
+
+def _tinka_tipas(raktas, katalogas):
+    """0.2.1: 0.2, idiegta 2026-11-15 po 14:27, is HF main gavo Upeli (RNN-T), o krauna ji kaip
+    kmyna (TDT) - pirmas diktavimas luzta. Tokie failai = netinka: ko_truksta() juos parodys kaip
+    trukstamus, ir parsisiusk() uzrasys kmyna is revizijos ant virsaus. Tik lt_ausys - GigaAM
+    config.json tipas kitoks, nei renkames mes."""
+    if raktas != "lt_ausys":
+        return True
+    try:
+        import json
+        with open(os.path.join(katalogas, "config.json"), encoding="utf-8") as f:
+            return json.load(f).get("model_type") == ONNX_MODELIAI[raktas]["tipas"]
+    except (OSError, ValueError):
+        return True                      # nera ko lyginti - kaip iki 0.2.1

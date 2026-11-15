@@ -18,6 +18,8 @@ Kas is kur (patikrinta per HF API 2026-09-11):
 NUO 0.2 (2026-10-25) - kitos ausys, zr. ausys.py:
   lt_ausys - `RobertasTa/lt-ausys` (Kristijono kmynas v4, CC BY 4.0), tik int8.
              Skyryba deda PATS, tad skyrybos modelio (1,1 GB) nebereikia.
+             ⛔ Nuo 0.2.1 - is revizijos `v1-kmynas` (main nuo 2026-11-15 - Upelis,
+             kuris ilgame diktavime nededa tasku; zr. modeliai.py).
   gigaam   - `istupakov/gigaam-v3-onnx` (SberDevices GigaAM v3 e2e, MIT), tik
              int8. Rusu kalbai nebereikia large-v3.
   large    - liko TIK anglu kalbai.
@@ -94,7 +96,8 @@ def parsisiusk(raktas, repo, pranesk=None):
         # Files atveju rasyti neleidzia). allow_patterns = TIK reikalingi failai.
         vieta = onnx_vietos(raktas)[1]
         os.makedirs(vieta, exist_ok=True)
-        snapshot_download(repo, local_dir=vieta, allow_patterns=ONNX_MODELIAI[raktas]["failai"])
+        snapshot_download(repo, local_dir=vieta, allow_patterns=ONNX_MODELIAI[raktas]["failai"],
+                          revision=ONNX_MODELIAI[raktas].get("revizija"))
         return vieta
     if raktas == "paprika":
         vieta = os.path.join(MODELIU_KATALOGAS, "paprika-ct2-int8")

@@ -74,7 +74,7 @@ from lt_dictation_paprika import (CHANNELS, CHUNK, COMPUTE_TYPE, DEVICE,
 CIA = os.path.dirname(os.path.abspath(__file__))
 IKONA = os.path.join(CIA, "Diktuokle.ico")
 README = os.path.join(CIA, "README.txt")
-VERSIJA = "0.2"
+VERSIJA = "0.2.1"
 KUREJO_PUSLAPIS = "https://github.com/RobertasTa/diktuokle"
 BRIEF_URL = "https://raw.githubusercontent.com/RobertasTa/diktuokle/main/AI_CONSULTANT_BRIEF.md"
 

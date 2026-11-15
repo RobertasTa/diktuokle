@@ -18,11 +18,26 @@ Hold **Right Ctrl**, speak, release — the text lands where the cursor is. Lith
 
 ## The ears are Kristijonas Jakubsonas's
 
-The heart of this program is not ours. Lithuanian speech is recognised by **[LT_ausys](https://huggingface.co/RobertasTa/lt-ausys)** — Kristijonas Jakubsonas's **[kmynas v4](https://huggingface.co/kristijonas/kmynas-parakeet-lt-v4)** (NVIDIA Parakeet fine-tuned on ~3 087 hours of the LIEPA-3 corpus), converted by us to ONNX and quantised so it runs on the CPU. It places punctuation and capitals **itself**. Kristijonas published his work **openly** (CC BY 4.0), which is the only reason this program exists.
+The heart of this program is not ours. Lithuanian speech is recognised by **[LT_ausys](https://huggingface.co/RobertasTa/lt-ausys/tree/v1-kmynas)** (its first version) — Kristijonas Jakubsonas's **[kmynas v4](https://huggingface.co/kristijonas/kmynas-parakeet-lt-v4)** (NVIDIA Parakeet fine-tuned on ~3 087 hours of the LIEPA-3 corpus), converted by us to ONNX and quantised so it runs on the CPU. It places punctuation and capitals **itself**. Kristijonas published his work **openly** (CC BY 4.0), which is the only reason this program exists.
 
 Russian is recognised by **[GigaAM v3](https://github.com/salute-developers/GigaAM)** (SberDevices, MIT), English by **Whisper large-v3** (OpenAI, MIT).
 
 We assembled a dictation tool around it: the window, the keys, number handling, the installer. Without Kristijonas this would be half a program. Thank you.
+
+### New in 0.2.1 — a fix
+
+Since 2026-11-15 LT_ausys has a new version — Datolabs' **Upelis**. A fresh 0.2 install downloaded it but could not load it, so Lithuanian dictation did not work. 0.2.1 always takes the first, Kristijonas's version (Hugging Face revision `v1-kmynas`); if the Upelis files are already downloaded, the program replaces them itself. If you installed earlier and everything worked, nothing changes.
+
+Why not Upelis? We measured it on the same audio. It makes fewer word errors, but **in long dictation it hardly writes full stops** — the text becomes one long sentence:
+
+| Lithuanian | kmynas (stays) | Upelis |
+|---|---|---|
+| author's commands — word errors | 17.9 % | **14.2 %** |
+| long dictation (~45 s) — word errors | 10.2 % | **8.6 %** |
+| long dictation — sentence boundaries (F1) | **89.9 %** | 5.5 % |
+| long dictation — commas (F1) | **82.6 %** | 58.0 % |
+
+In dictation people read the text, so Diktuoklė keeps kmynas. Upelis serves where punctuation does not matter — voice commands (Home Assistant).
 
 ### New in 0.2 — different ears
 
@@ -50,7 +65,7 @@ What it means for you: **Lithuanian and Russian no longer need a graphics card**
 
 ## Download
 
-**[Diktuokle-0.2-setup.exe](https://github.com/RobertasTa/diktuokle/releases/latest)** — about 90 MB. Installs per user, no admin rights. The installer speaks English, Lithuanian and Russian.
+**[Diktuokle-0.2.1-setup.exe](https://github.com/RobertasTa/diktuokle/releases/latest)** — about 90 MB. Installs per user, no admin rights. The installer speaks English, Lithuanian and Russian.
 
 Or with the Windows package manager (Windows 10/11):
 
@@ -135,7 +150,7 @@ Program: `%LOCALAPPDATA%\Programs\Diktuokle\`. Settings, models, CUDA, log: `%LO
 
 Program code **GPL-3.0-only** (`LICENSE`), like PyQt6 it is built on. What the program downloads has its own authors and licences: LT_ausys — kmynas v4 (Kristijonas Jakubsonas, on NVIDIA Parakeet; CC-BY-4.0), GigaAM v3 (SberDevices, MIT), Whisper `large-v3` (OpenAI, MIT), onnx-asr (istupakov, MIT), faster-whisper / CTranslate2 (SYSTRAN, MIT) with Silero VAD (MIT), CUDA libraries (NVIDIA EULA — fetched from PyPI, the same files `pip` would install).
 
-LT_ausys as the program downloads it (`RobertasTa/lt-ausys`, int8 files only) is **Kristijonas's kmynas weights in another format** — ONNX, quantised to int8 (matrix multiplications only, so the exam score does not drop). We converted it so it runs on the CPU without PyTorch or NeMo; how it was done and checked is in [RobertasTa/lt-ausys](https://github.com/RobertasTa/lt-ausys). GigaAM comes from `istupakov/gigaam-v3-onnx`, the ONNX export of the official model that onnx-asr itself uses.
+LT_ausys as the program downloads it (`RobertasTa/lt-ausys`, revision `v1-kmynas`, int8 files only) is **Kristijonas's kmynas weights in another format** — ONNX, quantised to int8 (matrix multiplications only, so the exam score does not drop). We converted it so it runs on the CPU without PyTorch or NeMo; how it was done and checked is in [RobertasTa/lt-ausys](https://github.com/RobertasTa/lt-ausys). GigaAM comes from `istupakov/gigaam-v3-onnx`, the ONNX export of the official model that onnx-asr itself uses.
 
 Up to 0.2 the program downloaded Paprika (`kristijonas/paprika-whisper-lt-v3`, CC-BY-4.0, our CTranslate2 copy) and a punctuation model (`punct_restore`, Apache-2.0; xlm-roberta, 1-800-BAD-CODE, Apache-2.0).
 

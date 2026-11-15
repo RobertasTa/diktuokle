@@ -28,7 +28,7 @@
 ; nebeatrasti failu. Rodomas tekstas ir failo vardas yra du skirtingi dalykai.
 #define AppName      "Diktuoklė"
 #define AppFailams   "Diktuokle"
-#define AppVersion   "0.2"
+#define AppVersion   "0.2.1"
 #define AppExeName   "Diktuokle.exe"
 #define AppUrl       "https://github.com/RobertasTa/diktuokle"
 
@@ -222,6 +222,12 @@ begin
   if not DirExists(Katalogas) then
     ForceDirectories(Katalogas);
   Failas := Katalogas + '\nustatymai.json';
+
+  // 0.2.1: TYLUS diegimas (`winget upgrade` diegia tyliai) kalbu puslapio NERODO - varneles
+  // lieka numatytosios, ne zmogaus. Atnaujinant (nustatymai jau yra) kalbu NELIECIAM: 0.2
+  // tokiu atveju rusu+lietuviu zmogui palikdavo vien lietuviu.
+  if WizardSilent and FileExists(Failas) then
+    Exit;
 
   // KALBOS - VISADA i atskira faila, kuri programa paleidziant isiurbia ir
   // istrina. Roberto testas 2026-09-11: perdieges su VIENA kalba gavo DVI, nes

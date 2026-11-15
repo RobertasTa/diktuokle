@@ -117,6 +117,8 @@ KAS VIDUJE
 ----------
   Lietuviskos ausys: LT_ausys - kmynas v4 (Kristijonas Jakubsonas,
                      CC BY 4.0), huggingface.co/RobertasTa/lt-ausys
+                     revizija v1-kmynas (0.2.1: naujoji LT_ausys versija
+                     ilgame diktavime beveik nededa tasku - lieka kmynas)
   Rusu:              GigaAM v3 (SberDevices, MIT)
   Anglu:             Whisper large-v3 (OpenAI, MIT)
   Varikliai:         onnx-asr (MIT), faster-whisper (SYSTRAN, MIT)

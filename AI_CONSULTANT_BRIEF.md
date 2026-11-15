@@ -54,7 +54,10 @@ uses a model actually trained on Lithuanian.
 ## How it works — the facts you must know before answering anything
 
 - **Since 0.2 (2026-10-25) each language has its own ears:**
-  - **Lithuanian — LT_ausys** (`RobertasTa/lt-ausys`): Kristijonas Jakubsonas's
+  - **Lithuanian — LT_ausys** (`RobertasTa/lt-ausys`, **revision `v1-kmynas`** since 0.2.1 — the repo's
+    main branch is Datolabs' Upelis since 2026-11-15, which Diktuoklė does NOT use: in long dictation it
+    hardly writes full stops; a fresh 0.2 install downloaded it and could not load it — fixed in 0.2.1):
+    Kristijonas Jakubsonas's
     **kmynas v4** (`kristijonas/kmynas-parakeet-lt-v4`, NVIDIA Parakeet-TDT
     0.6B fine-tuned on LIEPA-3), converted by the authors to ONNX and quantised
     to int8 (MatMul only). Runs through `onnx-asr` **on the CPU**. It writes

@@ -20,11 +20,26 @@ Laikai **dešinį Ctrl**, kalbi, paleidi — tekstas atsiranda ten, kur mirksi �
 
 ## Ausys — Kristijono Jakubsono
 
-Šios programos širdis nėra mūsų. Lietuvišką šneką atpažįsta **[LT_ausys](https://huggingface.co/RobertasTa/lt-ausys)** — tai Kristijono Jakubsono modelis **[kmynas v4](https://huggingface.co/kristijonas/kmynas-parakeet-lt-v4)** (NVIDIA Parakeet, pritaikytas lietuvių kalbai iš ~3 087 val. LIEPA-3 garsyno), mūsų perkeltas į ONNX ir suspaustas, kad suktųsi procesoriuje. Skyrybą ir didžiąsias raides jis deda **pats**. Kristijonas savo darbą paskelbė **atvirai** (CC BY 4.0), todėl ši programa apskritai galėjo atsirasti.
+Šios programos širdis nėra mūsų. Lietuvišką šneką atpažįsta **[LT_ausys](https://huggingface.co/RobertasTa/lt-ausys/tree/v1-kmynas)** (pirmoji jų versija) — tai Kristijono Jakubsono modelis **[kmynas v4](https://huggingface.co/kristijonas/kmynas-parakeet-lt-v4)** (NVIDIA Parakeet, pritaikytas lietuvių kalbai iš ~3 087 val. LIEPA-3 garsyno), mūsų perkeltas į ONNX ir suspaustas, kad suktųsi procesoriuje. Skyrybą ir didžiąsias raides jis deda **pats**. Kristijonas savo darbą paskelbė **atvirai** (CC BY 4.0), todėl ši programa apskritai galėjo atsirasti.
 
 Rusišką šneką atpažįsta **[GigaAM v3](https://github.com/salute-developers/GigaAM)** (SberDevices, MIT), angliškai — **Whisper large-v3** (OpenAI, MIT).
 
 Mes surinkom iš to diktavimo įrankį: langą, klavišus, skaičių tvarkymą, diegimą. Be Kristijono būtų pusė programos. Ačiū.
+
+### Kas naujo 0.2.1 — pataisymas
+
+Nuo 2026-11-15 LT_ausys turi naują versiją — Datolabs **Upelį**. Naujas 0.2 diegimas jį parsisiųsdavo, bet nemokėjo įkelti, todėl lietuviškas diktavimas neveikdavo. 0.2.1 visada ima pirmąją, Kristijono versiją (Hugging Face revizija `v1-kmynas`); jei Upelio failai jau parsisiųsti, programa pati juos pakeičia. Jei įdiegei anksčiau ir viskas veikė — niekas nesikeičia.
+
+Kodėl ne Upelis? Išmatavom ant tų pačių garsų. Žodžiais jis tikslesnis, bet **ilgame diktavime beveik nededa taškų** — tekstas virsta vienu ilgu sakiniu:
+
+| Lietuvių | kmynas (lieka) | Upelis |
+|---|---|---|
+| Roberto komandos — žodžių klaidos | 17,9 % | **14,2 %** |
+| ilgas diktavimas (~45 s) — žodžių klaidos | 10,2 % | **8,6 %** |
+| ilgas diktavimas — sakinių ribos (F1) | **89,9 %** | 5,5 % |
+| ilgas diktavimas — kableliai (F1) | **82,6 %** | 58,0 % |
+
+Diktuojant tekstą žmogus skaito, tad Diktuoklei lieka kmynas. Upelis tarnauja ten, kur skyryba nesvarbi — balso komandoms (Home Assistant).
 
 ### Kas naujo 0.2 — kitos ausys
 
@@ -52,7 +67,7 @@ Ką tai reiškia tau: **lietuvių ir rusų kalbai vaizdo plokštės nebereikia**
 
 ## Parsisiųsti
 
-**[Diktuokle-0.2-setup.exe](https://github.com/RobertasTa/diktuokle/releases/latest)** — apie 90 MB. Diegiasi į tavo profilį, administratoriaus teisių nereikia.
+**[Diktuokle-0.2.1-setup.exe](https://github.com/RobertasTa/diktuokle/releases/latest)** — apie 90 MB. Diegiasi į tavo profilį, administratoriaus teisių nereikia.
 
 Arba per Windows paketų tvarkyklę (Windows 10/11):
 
@@ -182,7 +197,7 @@ Programos kodas — **GPL-3.0-only** (`LICENSE`), kaip ir PyQt6, ant kurio langa
 | faster-whisper, CTranslate2, Silero VAD | SYSTRAN; Silero | MIT |
 | CUDA bibliotekos (jei parsisiuntei) | NVIDIA | NVIDIA EULA — parsisiunčiamos iš PyPI, tos pačios, kurias dėtų `pip` |
 
-LT_ausys, kurią programa parsisiunčia (`RobertasTa/lt-ausys`, tik int8 failai), yra **Kristijono kmyno svoriai kitu formatu** — ONNX, suspausti į int8 (tik matricų daugybos, kad egzamino rezultatas nenukristų). Konvertavom todėl, kad sukasi procesoriuje be PyTorch ir NeMo; kaip tai padaryta ir kaip tikrinta — repo [RobertasTa/lt-ausys](https://github.com/RobertasTa/lt-ausys). GigaAM imamas iš `istupakov/gigaam-v3-onnx` — oficialaus modelio ONNX eksporto, kurį naudoja pats onnx-asr.
+LT_ausys, kurią programa parsisiunčia (`RobertasTa/lt-ausys`, revizija `v1-kmynas`, tik int8 failai), yra **Kristijono kmyno svoriai kitu formatu** — ONNX, suspausti į int8 (tik matricų daugybos, kad egzamino rezultatas nenukristų). Konvertavom todėl, kad sukasi procesoriuje be PyTorch ir NeMo; kaip tai padaryta ir kaip tikrinta — repo [RobertasTa/lt-ausys](https://github.com/RobertasTa/lt-ausys). GigaAM imamas iš `istupakov/gigaam-v3-onnx` — oficialaus modelio ONNX eksporto, kurį naudoja pats onnx-asr.
 
 Iki 0.2 programa parsisiųsdavo Paprika (`kristijonas/paprika-whisper-lt-v3`, CC-BY-4.0, mūsų CTranslate2 kopija) ir skyrybos modelį (`punct_restore`, Apache-2.0; xlm-roberta, 1-800-BAD-CODE, Apache-2.0).
 
